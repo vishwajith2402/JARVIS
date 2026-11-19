@@ -1,0 +1,68 @@
+{
+  "system": {
+    "assistant_name": "JARVIS",
+    "user_title": "Sir",
+    "version": "1.1.0",
+    "mode": "dashboard",
+    "github_repo": "vishwajith2402/JARVIS",
+    "persona": "You are JARVIS, a sophisticated, courteous, highly intelligent, and efficient personal desktop AI assistant. You speak concisely, address the user courteously as Sir, provide sharp technical insights, and execute local automation tasks with precision."
+  },
+  "agent": {
+    "engine": "auto",
+    "primary_model": "hermes3:8b",
+    "fallback_models": ["llama3.2:3b", "qwen2.5-coder:7b", "phi3.5:latest"],
+    "vision_model": "moondream:latest",
+    "temperature": 0.2,
+    "max_tokens": 1024,
+    "stream": true,
+    "endpoints": {
+      "ollama": "http://127.0.0.1:11434",
+      "msty": "http://127.0.0.1:1024/v1",
+      "lmstudio": "http://127.0.0.1:1234/v1",
+      "custom_openai": "http://127.0.0.1:8080/v1"
+    },
+    "cloud_fallback": {
+      "enabled": false,
+      "provider": "groq",
+      "api_key": "",
+      "model": "llama-3.1-70b-versatile"
+    }
+  },
+  "voice": {
+    "enabled": true,
+    "tts_engine": "sapi",
+    "voice_rate": 1,
+    "voice_volume": 100,
+    "voice_name": "",
+    "wake_word": "jarvis",
+    "push_to_talk_key": "ctrl+shift+j",
+    "auto_speak_responses": true
+  },
+  "vision": {
+    "enabled": true,
+    "save_screenshots": true,
+    "screenshots_dir": "data/screenshots",
+    "max_image_dimension": 1024
+  },
+  "automation": {
+    "permission_levels": {
+      "level_1_auto": ["get_system_stats", "list_files", "read_file", "search_files", "list_windows", "web_search", "inspect_project"],
+      "level_2_confirm": ["open_application", "create_file", "edit_file", "create_folder", "take_screenshot", "lock_workstation", "volume_control"],
+      "level_3_restricted": ["delete_file", "delete_folder", "kill_process", "run_shell_command"]
+    },
+    "allowed_project_roots": [
+      "D:\\Practice Projects",
+      "D:\\Extra",
+      "C:\\Users\\HP\\Desktop",
+      "C:\\Users\\HP\\Documents"
+    ],
+    "confirm_level_2": false,
+    "confirm_level_3": true
+  },
+  "telemetry": {
+    "poll_interval_sec": 2.0,
+    "vram_limit_mb": 4096,
+    "alert_vram_percent": 85,
+    "alert_cpu_percent": 90
+  }
+}

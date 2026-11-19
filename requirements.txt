@@ -1,0 +1,19 @@
+# J.A.R.V.I.S. Personal Desktop AI Assistant Dependencies
+# Hardware Target: HP Victus 15 (AMD Ryzen 5, NVIDIA RTX 3050 4GB VRAM, 16GB RAM)
+
+# GUI & Desktop HUD
+pywebview>=5.0.0
+Pillow>=10.0.0
+
+# Windows System Telemetry & Automation
+psutil>=5.9.0
+pywin32>=306
+
+# Voice & Speech
+SpeechRecognition>=3.10.0
+# pyttsx3 is optional since JARVIS includes direct Windows SAPI via win32com
+
+# Local AI & Vision
+# Ollama runs as a standalone service (ollama.com)
+requests>=2.31.0
+urllib3>=2.0.0

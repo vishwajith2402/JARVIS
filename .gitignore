@@ -1,0 +1,28 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# JARVIS runtime databases & screenshots
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/screenshots/*.png
+!data/readme.txt
+!data/screenshots/readme.txt
+
+# OS & IDE artifacts
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+test.txt

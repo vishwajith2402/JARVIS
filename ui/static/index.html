@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>J.A.R.V.I.S. // Desktop Tactical AI</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="hud-container">
+    <!-- Top HUD Header -->
+    <header class="hud-header">
+      <div class="brand">
+        <div class="hologram-logo"></div>
+        <div class="title-block">
+          <h1>J.A.R.V.I.S.</h1>
+          <span class="subtext">DESKTOP COMMAND AI // TACTICAL CORE</span>
+        </div>
+      </div>
+      <div class="system-status-pills">
+        <div class="pill online" id="status-ai"><span class="dot"></span> AI CORE: <strong id="ai-model-tag">ONLINE</strong></div>
+        <div class="pill active" id="status-voice"><span class="dot"></span> VOICE: <strong id="voice-tag">STANDBY</strong></div>
+        <div class="pill" id="status-gpu"><span class="dot"></span> RTX 3050: <strong id="gpu-tag">OPTIMAL</strong></div>
+      </div>
+    </header>
+
+    <!-- Main Grid Layout -->
+    <div class="hud-grid">
+      <!-- Left Sidebar: Telemetry & Hardware Status -->
+      <aside class="hud-card telemetry-card">
+        <div class="card-header">
+          <span class="hud-bracket">[</span> SYSTEM TELEMETRY <span class="hud-bracket">]</span>
+        </div>
+        
+        <!-- RTX 3050 VRAM Gauge -->
+        <div class="gauge-group">
+          <div class="gauge-label">
+            <span>GPU: RTX 3050 (4GB)</span>
+            <span id="gpu-vram-text">0 / 4096 MB</span>
+          </div>
+          <div class="progress-bar"><div class="fill cyan" id="gpu-vram-bar" style="width: 10%;"></div></div>
+          <div class="telemetry-sub">Temp: <span id="gpu-temp">45°C</span> | Util: <span id="gpu-util">0%</span></div>
+        </div>
+
+        <!-- CPU Gauge -->
+        <div class="gauge-group">
+          <div class="gauge-label">
+            <span>CPU: AMD RYZEN 5</span>
+            <span id="cpu-percent-text">12%</span>
+          </div>
+          <div class="progress-bar"><div class="fill blue" id="cpu-bar" style="width: 12%;"></div></div>
+          <div class="telemetry-sub">Cores: 12 Logical | Active</div>
+        </div>
+
+        <!-- RAM Gauge -->
+        <div class="gauge-group">
+          <div class="gauge-label">
+            <span>MEMORY (16GB)</span>
+            <span id="ram-text">10.4 / 15.3 GB</span>
+          </div>
+          <div class="progress-bar"><div class="fill purple" id="ram-bar" style="width: 68%;"></div></div>
+        </div>
+
+        <!-- Battery & Power -->
+        <div class="gauge-group">
+          <div class="gauge-label">
+            <span>POWER / BATTERY</span>
+            <span id="battery-text">99% [AC]</span>
+          </div>
+          <div class="progress-bar"><div class="fill green" id="battery-bar" style="width: 99%;"></div></div>
+        </div>
+
+        <!-- Quick Launch Tactical Controls -->
+        <div class="card-header mt-4">
+          <span class="hud-bracket">[</span> DIRECT COMMANDS <span class="hud-bracket">]</span>
+        </div>
+        <div class="quick-actions">
+          <button class="hud-btn" onclick="quickAction('open_vscode')"><span>VS CODE</span></button>
+          <button class="hud-btn" onclick="quickAction('scan_projects')"><span>INSPECT PROJECTS</span></button>
+          <button class="hud-btn" onclick="quickAction('screen_capture')"><span>VISION SCAN</span></button>
+          <button class="hud-btn" onclick="quickAction('check_updates')"><span>CHECK UPDATES</span></button>
+          <button class="hud-btn" onclick="quickAction('lock_pc')"><span>LOCK SYSTEM</span></button>
+        </div>
+      </aside>
+
+      <!-- Center: Holographic Core / Arc Reactor & Chat Terminal -->
+      <main class="hud-card center-card">
+        <!-- Core Visualizer Canvas -->
+        <div class="arc-reactor-wrapper">
+          <canvas id="arcCanvas" width="220" height="220"></canvas>
+          <div class="arc-status-text" id="arcText">AWAITING INPUT, SIR</div>
+        </div>
+
+        <!-- Chat Conversation Area -->
+        <div class="chat-terminal" id="chatBox">
+          <div class="chat-msg jarvis">
+            <div class="speaker-tag">J.A.R.V.I.S.</div>
+            <div class="msg-content">Good day, Sir. All local diagnostic subsystems are nominal. Ollama and your RTX 3050 acceleration pipeline are primed. How may I be of assistance?</div>
+          </div>
+        </div>
+
+        <!-- Input Bar -->
+        <div class="hud-input-bar">
+          <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="Push to Speak / Voice Input">
+            <svg viewBox="0 0 24 24" class="mic-icon"><path fill="currentColor" d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path fill="currentColor" d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+          </button>
+          <input type="text" id="userInput" placeholder="Give an instruction or type a query, Sir..." onkeydown="handleKey(event)">
+          <button class="send-btn" onclick="sendMessage()">EXECUTE</button>
+        </div>
+      </main>
+
+      <!-- Right Sidebar: Task Center & Project Intelligence -->
+      <aside class="hud-card task-card">
+        <div class="card-header">
+          <span class="hud-bracket">[</span> TACTICAL TASK CENTER <span class="hud-bracket">]</span>
+        </div>
+        <div class="task-list" id="taskList">
+          <div class="task-item active">
+            <div class="task-title">Core Readiness</div>
+            <div class="task-desc">Telemetry online. Ready for command execution.</div>
+            <div class="task-badge">READY</div>
+          </div>
+        </div>
+
+        <div class="card-header mt-4">
+          <span class="hud-bracket">[</span> ACTIVE PROJECTS <span class="hud-bracket">]</span>
+        </div>
+        <div class="project-list" id="projectList">
+          <div class="project-item">
+            <span class="project-name">JARVIS</span>
+            <span class="project-type">Python / AI</span>
+          </div>
+        </div>
+
+        <div class="card-header mt-4">
+          <span class="hud-bracket">[</span> VOICE FEEDBACK <span class="hud-bracket">]</span>
+        </div>
+        <div class="voice-controls">
+          <label class="toggle-switch">
+            <input type="checkbox" id="voiceToggle" checked onchange="toggleVoiceFeedback()">
+            <span class="slider"></span>
+            <span class="toggle-label">Auto-Speak Answers</span>
+          </label>
+          <button class="hud-btn mt-2" onclick="testVoice()">TEST SAPI SPEECH</button>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
