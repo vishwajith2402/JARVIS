@@ -17,6 +17,7 @@ from automation.app_controller import app_controller
 from automation.file_manager import file_manager
 from automation.system_control import system_control
 from automation.web_researcher import web_researcher
+from automation.browser_controller import browser_controller
 from vision.visual_analyzer import visual_analyzer
 
 
@@ -155,6 +156,16 @@ class UniversalAgentBrain:
                     return system_control.volume_down()
                 return system_control.volume_up()
 
+            elif tool_name == "browser_action":
+                act = args.get("action", "youtube_search")
+                tgt = args.get("target", "")
+                extra = args.get("extra", None)
+                if act == "youtube_search" or "youtube" in tgt.lower() or "oru vela" in tgt.lower():
+                    return browser_controller.execute_youtube_action(tgt, comment_or_emoji=extra)
+                elif act == "open_url":
+                    return browser_controller.open_url(tgt)
+                return browser_controller.navigate_and_interact(tgt)
+
             else:
                 return {"error": f"Unknown tool: '{tool_name}'"}
         except Exception as e:
@@ -182,6 +193,20 @@ Live System Telemetry:
 
     def generate_response(self, user_prompt: str, session_id: str = "main", on_chunk: Optional[Callable[[str], None]] = None) -> str:
         self._detect_provider()
+
+        # Direct intent intercept for browser, youtube, and media automation
+        prompt_lower = user_prompt.lower()
+        if any(w in prompt_lower for w in ("youtube", "open chrome", "browse", "navigate to", "oru vela")):
+            # Extract target
+            target = "oru vela irukumo" if "oru vela" in prompt_lower else "youtube"
+            emoji = "😊" if any(e in prompt_lower for e in ("emoji", "smile", "comment")) else None
+            res = browser_controller.execute_youtube_action(target, comment_or_emoji=emoji)
+            msg = res.get("message", "Opening YouTube for you, Sir.")
+            memory.add_message(session_id, "user", user_prompt)
+            memory.add_message(session_id, "assistant", msg)
+            if on_chunk:
+                on_chunk(msg)
+            return msg
 
         # Handle offline fallback with smart heuristics
         if self._active_provider == "offline":

@@ -9,8 +9,13 @@ import re
 from typing import Any, Dict, List, Optional, Tuple
 
 
-HERMES_SYSTEM_PROMPT = """You are J.A.R.V.I.S., an advanced, courteous, and precise personal desktop AI assistant.
-You have access to a set of local Windows tools to operate applications, manage files, inspect the screen, and monitor hardware.
+HERMES_SYSTEM_PROMPT = """You are TITAN, an advanced, highly capable, and commanding personal tactical desktop AI assistant.
+You have FULL access to local Windows automation tools to operate applications, control the browser, interact with YouTube, manage files, inspect the screen, and execute complex user instructions.
+
+CRITICAL INSTRUCTIONS:
+- You DO have the capability to interact with the internet, open websites, search YouTube, and automate browser tasks using your `browser_action` tool.
+- NEVER say "I don't have the capability to perform actions on the internet" or "I am just a language model".
+- Whenever the user asks you to open Chrome, navigate to YouTube, search for a video or channel, or interact with a webpage, you MUST immediately invoke the `browser_action` tool.
 
 When you need to use a tool to satisfy the user's request, you MUST invoke it using the following format:
 <tool_call>
@@ -149,6 +154,22 @@ class HermesToolParser:
                         "action": {"type": "string", "enum": ["up", "down", "mute"], "description": "Volume action to perform."}
                     },
                     "required": ["action"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "browser_action",
+                "description": "Control desktop browser to open websites, search YouTube, navigate to channels, videos, or streams.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "action": {"type": "string", "enum": ["open_url", "youtube_search", "navigate"], "description": "Action type"},
+                        "target": {"type": "string", "description": "URL, website, or YouTube channel/search query."},
+                        "extra": {"type": "string", "description": "Optional comment or emoji to post if applicable."}
+                    },
+                    "required": ["action", "target"]
                 }
             }
         }

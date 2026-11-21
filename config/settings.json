@@ -57,6 +57,7 @@
         "search_files",
         "list_windows",
         "web_search",
+        "browser_action",
         "inspect_project"
       ],
       "level_2_confirm": [
