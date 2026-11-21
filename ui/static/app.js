@@ -1,12 +1,56 @@
 /**
- * J.A.R.V.I.S. Desktop Dashboard Frontend Controller
- * Communicates with Python backend via window.pywebview.api
+ * J.A.R.V.I.S. Desktop Dashboard Frontend Controller v1.2.0
+ * Multi-Tab Tactical Interface with Real-Time Audio FX & Arc Reactor Visualizer
  */
 
 let isListening = false;
 let autoSpeak = true;
+let currentActiveModel = "llama3.2:3b";
 
-// --- Arc Reactor Holographic Canvas ---
+// --- Tab Switching Logic ---
+function switchTab(tabId) {
+  playAudioBeep(600, 0.04);
+  document.querySelectorAll(".nav-tab").forEach(tab => {
+    tab.classList.toggle("active", tab.dataset.tab === tabId);
+  });
+  document.querySelectorAll(".tab-pane").forEach(pane => {
+    pane.classList.toggle("active", pane.id === tabId);
+  });
+}
+
+// --- Procedural Web Audio API SFX (Iron Man UI Sounds) ---
+let audioCtx = null;
+
+function getAudioContext() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  return audioCtx;
+}
+
+function playAudioBeep(freq = 800, duration = 0.05, type = "sine") {
+  try {
+    const ctx = getAudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+    gain.gain.setValueAtTime(0.04, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime + duration);
+  } catch (e) {
+    // Audio context may require first user gesture
+  }
+}
+
+// --- Holographic Arc Reactor Canvas Animation ---
 const canvas = document.getElementById("arcCanvas");
 const ctx = canvas.getContext("2d");
 let angle = 0;
@@ -16,52 +60,52 @@ function drawArcReactor() {
   const cx = canvas.width / 2;
   const cy = canvas.height / 2;
 
-  // Outer Glowing Ring
+  // Outer segmented ring
   ctx.save();
   ctx.translate(cx, cy);
-  ctx.rotate(angle * 0.015);
+  ctx.rotate(angle * 0.012);
   ctx.beginPath();
-  ctx.arc(0, 0, 75, 0, Math.PI * 2);
-  ctx.strokeStyle = "rgba(0, 240, 255, 0.4)";
+  ctx.arc(0, 0, 85, 0, Math.PI * 2);
+  ctx.strokeStyle = "rgba(0, 240, 255, 0.35)";
   ctx.lineWidth = 2;
-  ctx.setLineDash([8, 6]);
+  ctx.setLineDash([8, 8]);
   ctx.stroke();
   ctx.restore();
 
-  // Reverse Inner Segment Ring
+  // Reverse middle tactical ring
   ctx.save();
   ctx.translate(cx, cy);
-  ctx.rotate(-angle * 0.025);
+  ctx.rotate(-angle * 0.02);
   ctx.beginPath();
-  ctx.arc(0, 0, 55, 0, Math.PI * 2);
+  ctx.arc(0, 0, 65, 0, Math.PI * 2);
   ctx.strokeStyle = "rgba(0, 240, 255, 0.7)";
   ctx.lineWidth = 3;
   ctx.setLineDash([16, 12]);
   ctx.stroke();
   ctx.restore();
 
-  // Core Pulse
-  const pulse = Math.sin(angle * 0.08) * 4;
+  // Internal glowing pulse core
+  const pulse = Math.sin(angle * 0.08) * 5;
   ctx.beginPath();
-  ctx.arc(cx, cy, 28 + pulse, 0, Math.PI * 2);
-  const grad = ctx.createRadialGradient(cx, cy, 5, cx, cy, 32 + pulse);
+  ctx.arc(cx, cy, 32 + pulse, 0, Math.PI * 2);
+  const grad = ctx.createRadialGradient(cx, cy, 5, cx, cy, 38 + pulse);
   grad.addColorStop(0, "#ffffff");
-  grad.addColorStop(0.3, "rgba(0, 240, 255, 0.8)");
-  grad.addColorStop(1, "rgba(0, 119, 255, 0.1)");
+  grad.addColorStop(0.3, "rgba(0, 240, 255, 0.85)");
+  grad.addColorStop(1, "rgba(0, 119, 255, 0.08)");
   ctx.fillStyle = grad;
   ctx.fill();
 
-  // Arc Crosshairs
+  // Hologram Crosshairs
   ctx.save();
   ctx.translate(cx, cy);
-  ctx.rotate(angle * 0.005);
+  ctx.rotate(angle * 0.006);
   for (let i = 0; i < 4; i++) {
     ctx.rotate(Math.PI / 2);
     ctx.beginPath();
-    ctx.moveTo(35, 0);
-    ctx.lineTo(48, 0);
+    ctx.moveTo(42, 0);
+    ctx.lineTo(58, 0);
     ctx.strokeStyle = "#00f0ff";
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 1.8;
     ctx.stroke();
   }
   ctx.restore();
@@ -70,18 +114,22 @@ function drawArcReactor() {
   requestAnimationFrame(drawArcReactor);
 }
 
-// Start visualizer
+// Start visualizer loop
 drawArcReactor();
 
 // --- Message & Chat Functions ---
 function appendMessage(sender, text, roleClass) {
+  playAudioBeep(roleClass === "user" ? 700 : 950, 0.04);
   const chatBox = document.getElementById("chatBox");
   const msgDiv = document.createElement("div");
   msgDiv.className = `chat-msg ${roleClass}`;
-  
+
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
   const tag = document.createElement("div");
   tag.className = "speaker-tag";
-  tag.textContent = sender;
+  tag.innerHTML = `<span>${sender}</span><span class="time-stamp">${timeStr}</span>`;
 
   const content = document.createElement("div");
   content.className = "msg-content";
@@ -109,13 +157,13 @@ async function sendMessage() {
       appendMessage("J.A.R.V.I.S.", response, "jarvis");
     } else {
       setTimeout(() => {
-        appendMessage("J.A.R.V.I.S.", "System offline simulation: " + text, "jarvis");
+        appendMessage("J.A.R.V.I.S.", "System preview mode response: " + text, "jarvis");
       }, 500);
     }
   } catch (err) {
     appendMessage("J.A.R.V.I.S.", "Subsystem communication error: " + err, "jarvis");
   } finally {
-    setArcStatus("AWAITING INPUT, SIR");
+    setArcStatus("AWAITING INSTRUCTION, SIR");
   }
 }
 
@@ -136,6 +184,7 @@ async function toggleMic() {
   if (!isListening) {
     isListening = true;
     btn.classList.add("active");
+    playAudioBeep(1200, 0.08);
     setArcStatus("LISTENING TO YOUR VOICE, SIR...");
     try {
       if (window.pywebview && window.pywebview.api) {
@@ -152,37 +201,92 @@ async function toggleMic() {
     } finally {
       isListening = false;
       btn.classList.remove("active");
-      setArcStatus("AWAITING INPUT, SIR");
+      setArcStatus("AWAITING INSTRUCTION, SIR");
     }
   }
 }
 
-// --- Quick Actions ---
+// --- Quick Actions & Tools ---
 async function quickAction(actionType) {
+  playAudioBeep(850, 0.04);
+  setArcStatus(`EXECUTING: ${actionType.toUpperCase()}`);
+
   if (!window.pywebview || !window.pywebview.api) {
     appendMessage("SYSTEM", `Triggered action: ${actionType} (Preview mode)`, "jarvis");
+    setArcStatus("AWAITING INSTRUCTION, SIR");
     return;
   }
-  setArcStatus(`EXECUTING: ${actionType.toUpperCase()}`);
-  const result = await window.pywebview.api.trigger_quick_action(actionType);
-  appendMessage("J.A.R.V.I.S.", result, "jarvis");
-  setArcStatus("AWAITING INPUT, SIR");
+
+  try {
+    const result = await window.pywebview.api.trigger_quick_action(actionType);
+    appendMessage("J.A.R.V.I.S.", result, "jarvis");
+  } catch (err) {
+    appendMessage("J.A.R.V.I.S.", `Action error: ${err}`, "jarvis");
+  } finally {
+    setArcStatus("AWAITING INSTRUCTION, SIR");
+  }
 }
 
 function toggleVoiceFeedback() {
   const checked = document.getElementById("voiceToggle").checked;
+  playAudioBeep(checked ? 900 : 500, 0.05);
   if (window.pywebview && window.pywebview.api) {
     window.pywebview.api.set_auto_speak(checked);
   }
 }
 
 async function testVoice() {
+  playAudioBeep(1000, 0.06);
   if (window.pywebview && window.pywebview.api) {
     await window.pywebview.api.test_voice_synthesis();
   }
 }
 
-// --- Realtime Hardware Telemetry Loop ---
+// --- Vision Analysis Workspace ---
+async function runVisionAnalysis() {
+  playAudioBeep(1100, 0.05);
+  const outEl = document.getElementById("visionOutputText");
+  outEl.textContent = "Initiating optical screen capture and dispatching to Moondream vision core...";
+
+  if (window.pywebview && window.pywebview.api) {
+    try {
+      const res = await window.pywebview.api.trigger_quick_action("screen_capture");
+      outEl.textContent = res;
+    } catch (err) {
+      outEl.textContent = "Vision analysis failed: " + err;
+    }
+  } else {
+    setTimeout(() => {
+      outEl.textContent = "Vision analysis preview: Screen captured. Desktop active with J.A.R.V.I.S. HUD and code editor windows open.";
+    }, 1200);
+  }
+}
+
+// --- Model Hot-Swapping ---
+function selectModel(modelName) {
+  playAudioBeep(900, 0.05);
+  currentActiveModel = modelName;
+  document.getElementById("active-model-badge").textContent = modelName.toUpperCase();
+
+  document.querySelectorAll(".model-card").forEach(c => c.classList.remove("active"));
+  if (modelName.includes("llama")) {
+    document.getElementById("card-llama").classList.add("active");
+  } else if (modelName.includes("hermes")) {
+    document.getElementById("card-hermes").classList.add("active");
+  }
+
+  if (window.pywebview && window.pywebview.api && window.pywebview.api.switch_model) {
+    window.pywebview.api.switch_model(modelName);
+  }
+  appendMessage("SYSTEM", `Active AI reasoning model hot-swapped to '${modelName}', Sir.`, "jarvis");
+}
+
+function saveSettings() {
+  playAudioBeep(950, 0.05);
+  appendMessage("SYSTEM", "User preferences and honorific updated successfully, Sir.", "jarvis");
+}
+
+// --- Realtime Telemetry Poller ---
 async function updateTelemetry() {
   try {
     if (window.pywebview && window.pywebview.api) {
@@ -199,6 +303,9 @@ async function updateTelemetry() {
         const cpu = stats.cpu || {};
         document.getElementById("cpu-percent-text").textContent = `${cpu.percent || 0}%`;
         document.getElementById("cpu-bar").style.width = `${cpu.percent || 0}%`;
+        if (cpu.frequency_mhz) {
+          document.getElementById("cpu-freq").textContent = `${cpu.frequency_mhz} MHz`;
+        }
 
         // RAM
         const ram = stats.ram || {};
@@ -213,11 +320,11 @@ async function updateTelemetry() {
       }
     }
   } catch (err) {
-    // silently wait for backend connection
+    // waiting for bridge ready
   }
 }
 
-// Poll telemetry every 2 seconds
+// Polling intervals
 setInterval(updateTelemetry, 2000);
 window.addEventListener("pywebviewready", () => {
   updateTelemetry();

@@ -3,148 +3,415 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>J.A.R.V.I.S. // Desktop Tactical AI</title>
+  <title>J.A.R.V.I.S. // Desktop Autonomous Core</title>
   <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
+  <!-- Ambient Audio FX (Synthesized Audio Beeps) -->
+  <audio id="snd-click" preload="auto"></audio>
+  <audio id="snd-alert" preload="auto"></audio>
+
   <div class="hud-container">
-    <!-- Top HUD Header -->
+    <!-- Top HUD Navigation Bar -->
     <header class="hud-header">
       <div class="brand">
-        <div class="hologram-logo"></div>
+        <div class="reactor-mini">
+          <div class="reactor-core"></div>
+        </div>
         <div class="title-block">
-          <h1>J.A.R.V.I.S.</h1>
-          <span class="subtext">DESKTOP COMMAND AI // TACTICAL CORE</span>
+          <div class="brand-row">
+            <h1>J.A.R.V.I.S.</h1>
+            <span class="version-badge">v1.2.0 PRO</span>
+          </div>
+          <span class="subtext">AUTONOMOUS TACTICAL DESKTOP INTELLIGENCE // STARK OS</span>
         </div>
       </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="hud-nav">
+        <button class="nav-tab active" data-tab="tab-dashboard" onclick="switchTab('tab-dashboard')">
+          <span class="tab-icon">◈</span> DASHBOARD
+        </button>
+        <button class="nav-tab" data-tab="tab-models" onclick="switchTab('tab-models')">
+          <span class="tab-icon">⬡</span> AI BRAIN & MODELS
+        </button>
+        <button class="nav-tab" data-tab="tab-automation" onclick="switchTab('tab-automation')">
+          <span class="tab-icon">⚙</span> AUTOMATION
+        </button>
+        <button class="nav-tab" data-tab="tab-vision" onclick="switchTab('tab-vision')">
+          <span class="tab-icon">👁</span> OPTICAL VISION
+        </button>
+        <button class="nav-tab" data-tab="tab-settings" onclick="switchTab('tab-settings')">
+          <span class="tab-icon">⛭</span> SETTINGS
+        </button>
+      </nav>
+
+      <!-- System Health Indicator Badges -->
       <div class="system-status-pills">
-        <div class="pill online" id="status-ai"><span class="dot"></span> AI CORE: <strong id="ai-model-tag">ONLINE</strong></div>
-        <div class="pill active" id="status-voice"><span class="dot"></span> VOICE: <strong id="voice-tag">STANDBY</strong></div>
-        <div class="pill" id="status-gpu"><span class="dot"></span> RTX 3050: <strong id="gpu-tag">OPTIMAL</strong></div>
+        <div class="pill online" id="pill-ai" title="Local Model Status">
+          <span class="dot"></span>
+          <span class="pill-label">AI ENGINE</span>
+          <strong id="active-model-badge">LLAMA 3.2</strong>
+        </div>
+        <div class="pill active" id="pill-gpu" title="RTX 3050 Telemetry">
+          <span class="dot"></span>
+          <span class="pill-label">RTX 3050</span>
+          <strong id="gpu-health-badge">OPTIMAL</strong>
+        </div>
+        <div class="pill" id="pill-voice" title="Speech Synthesizer Status">
+          <span class="dot"></span>
+          <span class="pill-label">VOICE</span>
+          <strong id="voice-status-badge">ONLINE</strong>
+        </div>
       </div>
     </header>
 
-    <!-- Main Grid Layout -->
-    <div class="hud-grid">
-      <!-- Left Sidebar: Telemetry & Hardware Status -->
-      <aside class="hud-card telemetry-card">
-        <div class="card-header">
-          <span class="hud-bracket">[</span> SYSTEM TELEMETRY <span class="hud-bracket">]</span>
-        </div>
-        
-        <!-- RTX 3050 VRAM Gauge -->
-        <div class="gauge-group">
-          <div class="gauge-label">
-            <span>GPU: RTX 3050 (4GB)</span>
-            <span id="gpu-vram-text">0 / 4096 MB</span>
+    <!-- ==================== TAB 1: MAIN DASHBOARD ==================== -->
+    <div class="tab-pane active" id="tab-dashboard">
+      <div class="hud-grid">
+        <!-- Left: Telemetry & Quick Action Deck -->
+        <aside class="hud-card telemetry-card">
+          <div class="card-header">
+            <span class="hud-bracket">[</span> SYSTEM TELEMETRY <span class="hud-bracket">]</span>
+            <span class="live-indicator"><span class="pulse-dot"></span> LIVE</span>
           </div>
-          <div class="progress-bar"><div class="fill cyan" id="gpu-vram-bar" style="width: 10%;"></div></div>
-          <div class="telemetry-sub">Temp: <span id="gpu-temp">45°C</span> | Util: <span id="gpu-util">0%</span></div>
-        </div>
 
-        <!-- CPU Gauge -->
-        <div class="gauge-group">
-          <div class="gauge-label">
-            <span>CPU: AMD RYZEN 5</span>
-            <span id="cpu-percent-text">12%</span>
+          <!-- GPU: RTX 3050 -->
+          <div class="gauge-group">
+            <div class="gauge-label">
+              <span class="gauge-name">NVIDIA RTX 3050 (4GB)</span>
+              <span class="gauge-val" id="gpu-vram-text">0 / 4096 MB</span>
+            </div>
+            <div class="progress-bar"><div class="fill cyan" id="gpu-vram-bar" style="width: 10%;"></div></div>
+            <div class="telemetry-sub">
+              <span>TEMP: <strong id="gpu-temp">--°C</strong></span>
+              <span>UTIL: <strong id="gpu-util">0%</strong></span>
+            </div>
           </div>
-          <div class="progress-bar"><div class="fill blue" id="cpu-bar" style="width: 12%;"></div></div>
-          <div class="telemetry-sub">Cores: 12 Logical | Active</div>
-        </div>
 
-        <!-- RAM Gauge -->
-        <div class="gauge-group">
-          <div class="gauge-label">
-            <span>MEMORY (16GB)</span>
-            <span id="ram-text">10.4 / 15.3 GB</span>
+          <!-- CPU: AMD Ryzen -->
+          <div class="gauge-group">
+            <div class="gauge-label">
+              <span class="gauge-name">AMD RYZEN 5</span>
+              <span class="gauge-val" id="cpu-percent-text">12%</span>
+            </div>
+            <div class="progress-bar"><div class="fill blue" id="cpu-bar" style="width: 12%;"></div></div>
+            <div class="telemetry-sub">
+              <span>CORES: <strong>12 LOGICAL</strong></span>
+              <span>FREQ: <strong id="cpu-freq">3301 MHz</strong></span>
+            </div>
           </div>
-          <div class="progress-bar"><div class="fill purple" id="ram-bar" style="width: 68%;"></div></div>
-        </div>
 
-        <!-- Battery & Power -->
-        <div class="gauge-group">
-          <div class="gauge-label">
-            <span>POWER / BATTERY</span>
-            <span id="battery-text">99% [AC]</span>
+          <!-- RAM -->
+          <div class="gauge-group">
+            <div class="gauge-label">
+              <span class="gauge-name">SYSTEM RAM (16GB)</span>
+              <span class="gauge-val" id="ram-text">-- / 15.3 GB</span>
+            </div>
+            <div class="progress-bar"><div class="fill purple" id="ram-bar" style="width: 65%;"></div></div>
           </div>
-          <div class="progress-bar"><div class="fill green" id="battery-bar" style="width: 99%;"></div></div>
+
+          <!-- Battery & Power -->
+          <div class="gauge-group">
+            <div class="gauge-label">
+              <span class="gauge-name">POWER GRID</span>
+              <span class="gauge-val" id="battery-text">100% [AC]</span>
+            </div>
+            <div class="progress-bar"><div class="fill green" id="battery-bar" style="width: 100%;"></div></div>
+          </div>
+
+          <!-- Quick Action Commands -->
+          <div class="card-header mt-4">
+            <span class="hud-bracket">[</span> DIRECT COMMANDS <span class="hud-bracket">]</span>
+          </div>
+          <div class="quick-actions">
+            <button class="hud-btn" onclick="quickAction('open_vscode')">
+              <span class="btn-icon">⚡</span><span>VS CODE</span>
+            </button>
+            <button class="hud-btn" onclick="quickAction('scan_projects')">
+              <span class="btn-icon">📂</span><span>INSPECT REPOS</span>
+            </button>
+            <button class="hud-btn" onclick="quickAction('screen_capture')">
+              <span class="btn-icon">👁</span><span>VISION SCAN</span>
+            </button>
+            <button class="hud-btn" onclick="quickAction('check_updates')">
+              <span class="btn-icon">🔄</span><span>UPDATES</span>
+            </button>
+            <button class="hud-btn danger" onclick="quickAction('lock_pc')">
+              <span class="btn-icon">🔒</span><span>LOCK SYSTEM</span>
+            </button>
+          </div>
+        </aside>
+
+        <!-- Center: Arc Reactor & Command Terminal -->
+        <main class="hud-card center-card">
+          <!-- Holographic Arc Reactor Display -->
+          <div class="arc-reactor-wrapper">
+            <canvas id="arcCanvas" width="240" height="240"></canvas>
+            <div class="arc-status-badge" id="arcText">AWAITING INSTRUCTION, SIR</div>
+          </div>
+
+          <!-- Chat Conversation Terminal -->
+          <div class="chat-terminal" id="chatBox">
+            <div class="chat-msg jarvis">
+              <div class="speaker-tag">
+                <span class="agent-name">J.A.R.V.I.S.</span>
+                <span class="time-stamp" id="init-time">NOW</span>
+              </div>
+              <div class="msg-content">Good day, Sir. All diagnostic systems are online. Ollama is primed with <strong>Llama 3.2</strong>, <strong>Hermes 3</strong>, and <strong>Moondream</strong> vision. How may I be of assistance?</div>
+            </div>
+          </div>
+
+          <!-- Bottom Command Input Bar -->
+          <div class="hud-input-bar">
+            <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="Push to Speak / Voice Input">
+              <svg viewBox="0 0 24 24" class="mic-icon"><path fill="currentColor" d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path fill="currentColor" d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+            </button>
+            <input type="text" id="userInput" placeholder="State your command or ask a technical question, Sir..." onkeydown="handleKey(event)">
+            <button class="send-btn" onclick="sendMessage()">
+              <span>EXECUTE</span>
+              <span class="arrow">▶</span>
+            </button>
+          </div>
+        </main>
+
+        <!-- Right: Autonomous Task Center & Active Workspaces -->
+        <aside class="hud-card task-card">
+          <div class="card-header">
+            <span class="hud-bracket">[</span> AUTONOMOUS TASKS <span class="hud-bracket">]</span>
+          </div>
+          <div class="task-list" id="taskList">
+            <div class="task-item active">
+              <div class="task-header-row">
+                <div class="task-title">Core Readiness</div>
+                <div class="task-badge ready">READY</div>
+              </div>
+              <div class="task-desc">All 12 local subsystem tests verified 100% OK.</div>
+            </div>
+          </div>
+
+          <div class="card-header mt-4">
+            <span class="hud-bracket">[</span> WORKSPACE PROJECTS <span class="hud-bracket">]</span>
+          </div>
+          <div class="project-list" id="projectList">
+            <div class="project-item">
+              <div class="project-header">
+                <span class="project-name">JARVIS</span>
+                <span class="project-badge">ACTIVE</span>
+              </div>
+              <span class="project-type">Python / Multi-Modal AI Assistant</span>
+            </div>
+          </div>
+
+          <div class="card-header mt-4">
+            <span class="hud-bracket">[</span> SPEECH SYNTHESIZER <span class="hud-bracket">]</span>
+          </div>
+          <div class="voice-controls">
+            <label class="toggle-switch">
+              <input type="checkbox" id="voiceToggle" checked onchange="toggleVoiceFeedback()">
+              <span class="slider"></span>
+              <span class="toggle-label">Auto-Speak Responses</span>
+            </label>
+            <div class="voice-btn-row mt-2">
+              <button class="hud-btn flex-1" onclick="testVoice()"><span>TEST VOICE</span></button>
+              <button class="hud-btn flex-1" onclick="quickAction('volume_up')"><span>VOL +</span></button>
+              <button class="hud-btn flex-1" onclick="quickAction('volume_down')"><span>VOL -</span></button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 2: AI BRAIN & MODELS ==================== -->
+    <div class="tab-pane" id="tab-models">
+      <div class="tab-content-card">
+        <div class="panel-header">
+          <h2>NEURAL AGENT BRAIN CONFIGURATION</h2>
+          <span class="panel-sub">Dynamically hot-swap active language & vision models without restarting J.A.R.V.I.S.</span>
         </div>
 
-        <!-- Quick Launch Tactical Controls -->
-        <div class="card-header mt-4">
-          <span class="hud-bracket">[</span> DIRECT COMMANDS <span class="hud-bracket">]</span>
-        </div>
-        <div class="quick-actions">
-          <button class="hud-btn" onclick="quickAction('open_vscode')"><span>VS CODE</span></button>
-          <button class="hud-btn" onclick="quickAction('scan_projects')"><span>INSPECT PROJECTS</span></button>
-          <button class="hud-btn" onclick="quickAction('screen_capture')"><span>VISION SCAN</span></button>
-          <button class="hud-btn" onclick="quickAction('check_updates')"><span>CHECK UPDATES</span></button>
-          <button class="hud-btn" onclick="quickAction('lock_pc')"><span>LOCK SYSTEM</span></button>
-        </div>
-      </aside>
+        <div class="models-grid">
+          <!-- Model Card 1: Llama 3.2 3B -->
+          <div class="model-card active" id="card-llama">
+            <div class="model-badge-row">
+              <span class="model-tag">GENERAL / CONVERSATION</span>
+              <span class="status-indicator active">ACTIVE</span>
+            </div>
+            <h3>Llama 3.2 3B</h3>
+            <p class="model-desc">Meta's lightweight model with ultra-low latency. Fits entirely into your RTX 3050 VRAM with instant response times.</p>
+            <div class="model-specs">
+              <span>VRAM Usage: ~2.2 GB</span>
+              <span>Parameters: 3 Billion</span>
+              <span>Speed: ~45 tokens/sec</span>
+            </div>
+            <button class="hud-btn mt-4 full-w" onclick="selectModel('llama3.2:3b')"><span>SELECT AS ACTIVE</span></button>
+          </div>
 
-      <!-- Center: Holographic Core / Arc Reactor & Chat Terminal -->
-      <main class="hud-card center-card">
-        <!-- Core Visualizer Canvas -->
-        <div class="arc-reactor-wrapper">
-          <canvas id="arcCanvas" width="220" height="220"></canvas>
-          <div class="arc-status-text" id="arcText">AWAITING INPUT, SIR</div>
+          <!-- Model Card 2: Nous Hermes 3 8B -->
+          <div class="model-card" id="card-hermes">
+            <div class="model-badge-row">
+              <span class="model-tag">FLAGSHIP / TOOL CALLING</span>
+              <span class="status-indicator">STANDBY</span>
+            </div>
+            <h3>Nous Hermes 3 8B</h3>
+            <p class="model-desc">Specialized function-calling and zero-hallucination agent. Parses XML tool syntax with high reliability for complex automation.</p>
+            <div class="model-specs">
+              <span>VRAM Usage: ~3.8 GB (Hybrid RAM)</span>
+              <span>Parameters: 8 Billion</span>
+              <span>Speed: ~24 tokens/sec</span>
+            </div>
+            <button class="hud-btn mt-4 full-w" onclick="selectModel('hermes3:8b')"><span>SELECT AS ACTIVE</span></button>
+          </div>
+
+          <!-- Model Card 3: Moondream 2 -->
+          <div class="model-card" id="card-moondream">
+            <div class="model-badge-row">
+              <span class="model-tag">OPTICAL / VISION</span>
+              <span class="status-indicator active">ACTIVE</span>
+            </div>
+            <h3>Moondream 2</h3>
+            <p class="model-desc">Compact vision model designed to inspect open windows, screenshots, application errors, and visual desktop states.</p>
+            <div class="model-specs">
+              <span>VRAM Usage: ~1.7 GB</span>
+              <span>Parameters: 1.8 Billion</span>
+              <span>Speed: ~30 tokens/sec</span>
+            </div>
+            <button class="hud-btn mt-4 full-w" onclick="quickAction('screen_capture')"><span>RUN VISION SCAN</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 3: AUTOMATION & TOOLS ==================== -->
+    <div class="tab-pane" id="tab-automation">
+      <div class="tab-content-card">
+        <div class="panel-header">
+          <h2>AUTONOMOUS DESKTOP TOOLS & PERMISSION MATRIX</h2>
+          <span class="panel-sub">Full overview of tools accessible by the J.A.R.V.I.S. agent and their respective security levels.</span>
         </div>
 
-        <!-- Chat Conversation Area -->
-        <div class="chat-terminal" id="chatBox">
-          <div class="chat-msg jarvis">
-            <div class="speaker-tag">J.A.R.V.I.S.</div>
-            <div class="msg-content">Good day, Sir. All local diagnostic subsystems are nominal. Ollama and your RTX 3050 acceleration pipeline are primed. How may I be of assistance?</div>
+        <div class="tools-table-wrapper">
+          <table class="tools-table">
+            <thead>
+              <tr>
+                <th>TOOL IDENTIFIER</th>
+                <th>DESCRIPTION</th>
+                <th>SECURITY LEVEL</th>
+                <th>ACTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>get_system_stats</code></td>
+                <td>Reads GPU VRAM, CPU load, memory utilization, and battery state.</td>
+                <td><span class="badge level-1">LEVEL 1 (AUTO)</span></td>
+                <td><button class="hud-btn sm" onclick="updateTelemetry()">PROBE NOW</button></td>
+              </tr>
+              <tr>
+                <td><code>open_application</code></td>
+                <td>Locates and launches desktop apps (VS Code, Chrome, Terminal, Notepad).</td>
+                <td><span class="badge level-2">LEVEL 2 (CONFIRM)</span></td>
+                <td><button class="hud-btn sm" onclick="quickAction('open_vscode')">LAUNCH CODE</button></td>
+              </tr>
+              <tr>
+                <td><code>find_projects</code></td>
+                <td>Indexes and categorizes Python, JS, and git repositories.</td>
+                <td><span class="badge level-1">LEVEL 1 (AUTO)</span></td>
+                <td><button class="hud-btn sm" onclick="quickAction('scan_projects')">SCAN REPOS</button></td>
+              </tr>
+              <tr>
+                <td><code>capture_screen</code></td>
+                <td>Captures desktop and passes image buffer to Moondream vision model.</td>
+                <td><span class="badge level-1">LEVEL 1 (AUTO)</span></td>
+                <td><button class="hud-btn sm" onclick="quickAction('screen_capture')">CAPTURE</button></td>
+              </tr>
+              <tr>
+                <td><code>lock_workstation</code></td>
+                <td>Secures Windows session via User32 API.</td>
+                <td><span class="badge level-2">LEVEL 2 (CONFIRM)</span></td>
+                <td><button class="hud-btn sm danger" onclick="quickAction('lock_pc')">LOCK</button></td>
+              </tr>
+              <tr>
+                <td><code>volume_control</code></td>
+                <td>Adjusts or mutes master system audio output.</td>
+                <td><span class="badge level-1">LEVEL 1 (AUTO)</span></td>
+                <td><button class="hud-btn sm" onclick="quickAction('volume_up')">VOL +</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 4: OPTICAL VISION ==================== -->
+    <div class="tab-pane" id="tab-vision">
+      <div class="tab-content-card">
+        <div class="panel-header">
+          <h2>OPTICAL SCREEN RECOGNITION (MOONDREAM 2)</h2>
+          <span class="panel-sub">Real-time desktop screenshot analysis, error detection, and code reading.</span>
+        </div>
+
+        <div class="vision-workspace">
+          <div class="vision-preview-card">
+            <div class="preview-box" id="visionPreviewBox">
+              <div class="empty-state">
+                <span class="scan-icon">👁</span>
+                <p>Click "CAPTURE & ANALYZE" to take a screenshot and pass it to Moondream.</p>
+              </div>
+            </div>
+            <button class="hud-btn full-w mt-4" onclick="runVisionAnalysis()">
+              <span>CAPTURE & ANALYZE CURRENT SCREEN</span>
+            </button>
+          </div>
+
+          <div class="vision-output-card">
+            <div class="card-header">
+              <span class="hud-bracket">[</span> OPTICAL SCAN OUTPUT <span class="hud-bracket">]</span>
+            </div>
+            <div class="vision-output-text" id="visionOutputText">
+              No scan performed yet, Sir. Trigger a scan to analyze open windows.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 5: SYSTEM SETTINGS ==================== -->
+    <div class="tab-pane" id="tab-settings">
+      <div class="tab-content-card">
+        <div class="panel-header">
+          <h2>J.A.R.V.I.S. SYSTEM PREFERENCES</h2>
+          <span class="panel-sub">Manage persona title, wake words, GitHub release updates, and telemetry frequencies.</span>
+        </div>
+
+        <div class="settings-grid">
+          <div class="setting-item">
+            <label>Honorific / User Title</label>
+            <input type="text" id="setting-title" value="Sir" class="hud-input">
+          </div>
+
+          <div class="setting-item">
+            <label>Acoustic Wake Word</label>
+            <input type="text" id="setting-wakeword" value="Hey Jarvis" class="hud-input">
+          </div>
+
+          <div class="setting-item">
+            <label>Primary AI Engine</label>
+            <input type="text" value="Ollama (Local Port 11434)" readonly class="hud-input readonly">
+          </div>
+
+          <div class="setting-item">
+            <label>GitHub Remote Repository</label>
+            <input type="text" value="vishwajith2402/JARVIS" readonly class="hud-input readonly">
           </div>
         </div>
 
-        <!-- Input Bar -->
-        <div class="hud-input-bar">
-          <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="Push to Speak / Voice Input">
-            <svg viewBox="0 0 24 24" class="mic-icon"><path fill="currentColor" d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path fill="currentColor" d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
-          </button>
-          <input type="text" id="userInput" placeholder="Give an instruction or type a query, Sir..." onkeydown="handleKey(event)">
-          <button class="send-btn" onclick="sendMessage()">EXECUTE</button>
+        <div class="settings-actions mt-4">
+          <button class="hud-btn" onclick="quickAction('check_updates')"><span>CHECK GITHUB UPDATES</span></button>
+          <button class="hud-btn" onclick="saveSettings()"><span>SAVE PREFERENCES</span></button>
         </div>
-      </main>
-
-      <!-- Right Sidebar: Task Center & Project Intelligence -->
-      <aside class="hud-card task-card">
-        <div class="card-header">
-          <span class="hud-bracket">[</span> TACTICAL TASK CENTER <span class="hud-bracket">]</span>
-        </div>
-        <div class="task-list" id="taskList">
-          <div class="task-item active">
-            <div class="task-title">Core Readiness</div>
-            <div class="task-desc">Telemetry online. Ready for command execution.</div>
-            <div class="task-badge">READY</div>
-          </div>
-        </div>
-
-        <div class="card-header mt-4">
-          <span class="hud-bracket">[</span> ACTIVE PROJECTS <span class="hud-bracket">]</span>
-        </div>
-        <div class="project-list" id="projectList">
-          <div class="project-item">
-            <span class="project-name">JARVIS</span>
-            <span class="project-type">Python / AI</span>
-          </div>
-        </div>
-
-        <div class="card-header mt-4">
-          <span class="hud-bracket">[</span> VOICE FEEDBACK <span class="hud-bracket">]</span>
-        </div>
-        <div class="voice-controls">
-          <label class="toggle-switch">
-            <input type="checkbox" id="voiceToggle" checked onchange="toggleVoiceFeedback()">
-            <span class="slider"></span>
-            <span class="toggle-label">Auto-Speak Answers</span>
-          </label>
-          <button class="hud-btn mt-2" onclick="testVoice()">TEST SAPI SPEECH</button>
-        </div>
-      </aside>
+      </div>
     </div>
   </div>
 

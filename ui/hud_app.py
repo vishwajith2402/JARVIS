@@ -56,6 +56,12 @@ class JarvisApiBridge:
         speaker.speak(msg)
         return msg
 
+    def switch_model(self, model_name: str) -> Dict[str, Any]:
+        """Hot-swap the active reasoning model on the fly."""
+        brain.primary_model = model_name
+        config.set("agent", "primary_model", model_name)
+        return {"success": True, "active_model": model_name}
+
     def trigger_quick_action(self, action_type: str) -> str:
         if action_type == "open_vscode":
             res = app_controller.launch_app("vscode")
