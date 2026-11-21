@@ -175,7 +175,7 @@ class HermesToolParser:
             "type": "function",
             "function": {
                 "name": "browser_action",
-                "description": "Control desktop browser to open websites, search YouTube, navigate to channels, videos, or streams.",
+                "description": "Control desktop browser to open websites, search YouTube, navigate to channels, videos, or streams, subscribe, and interact with chat.",
                 "parameters": {
                     "type": "object",
                     "properties": {
@@ -185,6 +185,42 @@ class HermesToolParser:
                     },
                     "required": ["action", "target"]
                 }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "execute_python",
+                "description": "Execute Python scripts or calculations in a local sandbox (OpenJarvis code interpreter). Returns stdout and execution time.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "code": {"type": "string", "description": "Valid Python code to execute."}
+                    },
+                    "required": ["code"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "deep_research",
+                "description": "Multi-hop deep search over indexed local projects, documents, codebases, and offline knowledge base.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "query": {"type": "string", "description": "Research question or query."}
+                    },
+                    "required": ["query"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "morning_digest",
+                "description": "Generate a comprehensive daily system briefing, battery status, and tasks.",
+                "parameters": {"type": "object", "properties": {}, "required": []}
             }
         }
     ]

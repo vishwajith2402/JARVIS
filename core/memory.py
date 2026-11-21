@@ -6,16 +6,34 @@ Stores conversations, user preferences, projects, tasks, and knowledge facts.
 import json
 import sqlite3
 import time
+import tempfile
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
-try:
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-except Exception:
-    pass
-DB_PATH = DATA_DIR / "jarvis_memory.db"
+
+def _resolve_db_path() -> Path:
+    candidates = [
+        DATA_DIR / "jarvis_memory.db",
+        Path.home() / ".titan" / "jarvis_memory.db",
+        Path(tempfile.gettempdir()) / "titan_memory.db"
+    ]
+    for c in candidates:
+        try:
+            c.parent.mkdir(parents=True, exist_ok=True)
+            test_conn = sqlite3.connect(c)
+            test_conn.execute("CREATE TABLE IF NOT EXISTS _write_probe (x INT)")
+            test_conn.execute("INSERT INTO _write_probe VALUES (1)")
+            test_conn.execute("DELETE FROM _write_probe")
+            test_conn.commit()
+            test_conn.close()
+            return c
+        except Exception:
+            continue
+    return Path(":memory:")
+
+DB_PATH = _resolve_db_path()
 
 
 class MemoryManager:

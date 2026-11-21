@@ -7,6 +7,8 @@ let isListening = false;
 let autoSpeak = true;
 let activeModel = "llama3.2:3b";
 
+let currentAgentMode = "orchestrator";
+
 // --- Tab / View Switching ---
 function switchView(tabId) {
   document.querySelectorAll(".nav-btn").forEach(btn => {
@@ -15,6 +17,26 @@ function switchView(tabId) {
   document.querySelectorAll(".view-panel").forEach(panel => {
     panel.classList.toggle("active", panel.id === tabId);
   });
+}
+
+// --- OpenJarvis Agent Mode Selection ---
+function selectAgentMode(mode) {
+  currentAgentMode = mode;
+  document.querySelectorAll(".mode-pill").forEach(pill => {
+    pill.classList.toggle("active", pill.dataset.mode === mode);
+  });
+  if (window.pywebview && window.pywebview.api && window.pywebview.api.set_agent_mode) {
+    window.pywebview.api.set_agent_mode(mode);
+  }
+  const modeNames = {
+    orchestrator: "⚡ Orchestrator (Auto Tool Execution)",
+    native_react: "🧠 Native ReAct (Thought-Action-Observation)",
+    code_interpreter: "💻 Code Assistant (Python Sandbox)",
+    deep_research: "🔍 Deep Research (Knowledge Base)",
+    morning_digest: "📋 Daily Operative (Briefing & Health)",
+    simple: "💬 Simple (Fast Chat)"
+  };
+  appendMessage("System", `TITAN agent mode switched to: ${modeNames[mode] || mode}`, "assistant");
 }
 
 // --- Chat & Message Handling ---

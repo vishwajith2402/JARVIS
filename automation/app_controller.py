@@ -128,6 +128,9 @@ class UniversalAppController:
 
         return None
 
+    def _resolve_executable(self, query: str) -> Optional[str]:
+        return self.find_software(query)
+
     def launch_app(self, app_name: str, args: Optional[List[str]] = None) -> Dict[str, Any]:
         """
         Launch any installed software on the user's PC.
@@ -249,8 +252,14 @@ class UniversalAppController:
 
         # Stage 3: Windows taskkill fallback
         try:
-            cmd = ["taskkill", "/F" if force else "/T", "/IM", exe_name]
-            res = subprocess.run(cmd, capture_output=True, text=True, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+            cmd = ["taskkill", "/F", "/IM", exe_name]
+            res = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=2,
+                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0)
+            )
             if res.returncode == 0:
                 return {"success": True, "message": f"Closed '{app_name}' ({exe_name}) via taskkill, Sir."}
         except Exception:

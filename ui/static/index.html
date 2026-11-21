@@ -152,6 +152,17 @@
             <div class="orb-status" id="orbStatus">TITAN is ready. Type or speak your command.</div>
           </div>
 
+          <!-- OpenJarvis Mode Switcher Bar -->
+          <div class="agent-mode-bar">
+            <span class="mode-label">Mode:</span>
+            <button class="mode-pill active" data-mode="orchestrator" onclick="selectAgentMode('orchestrator')">⚡ Orchestrator</button>
+            <button class="mode-pill" data-mode="native_react" onclick="selectAgentMode('native_react')">🧠 ReAct Loop</button>
+            <button class="mode-pill" data-mode="code_interpreter" onclick="selectAgentMode('code_interpreter')">💻 Code Assistant</button>
+            <button class="mode-pill" data-mode="deep_research" onclick="selectAgentMode('deep_research')">🔍 Deep Research</button>
+            <button class="mode-pill" data-mode="morning_digest" onclick="selectAgentMode('morning_digest')">📋 Daily Operative</button>
+            <button class="mode-pill" data-mode="simple" onclick="selectAgentMode('simple')">💬 Simple</button>
+          </div>
+
           <!-- Message History -->
           <div class="conversation-thread" id="chatThread">
             <div class="message assistant">

@@ -164,11 +164,30 @@ class UniversalAgentBrain:
                 act = args.get("action", "youtube_search")
                 tgt = args.get("target", "")
                 extra = args.get("extra", None)
-                if act == "youtube_search" or "youtube" in tgt.lower() or "oru vela" in tgt.lower():
-                    return browser_controller.execute_youtube_action(tgt, comment_or_emoji=extra)
+                if act == "youtube_search" or "youtube" in tgt.lower() or "oru vela" in tgt.lower() or "channel" in tgt.lower():
+                    return browser_controller.execute_youtube_action(
+                        tgt,
+                        subscribe=args.get("subscribe", True),
+                        find_live=args.get("find_live", True),
+                        comment_or_emoji=extra or "😊"
+                    )
                 elif act == "open_url":
                     return browser_controller.open_url(tgt)
                 return browser_controller.navigate_and_interact(tgt)
+
+            elif tool_name == "execute_python":
+                from automation.code_interpreter import code_interpreter
+                code = args.get("code", "")
+                return code_interpreter.execute_python(code)
+
+            elif tool_name == "deep_research":
+                from automation.deep_research import deep_research
+                q = args.get("query", "")
+                return deep_research.deep_research_query(q)
+
+            elif tool_name == "morning_digest":
+                from automation.daily_briefing import daily_briefing
+                return daily_briefing.generate_morning_digest()
 
             else:
                 return {"error": f"Unknown tool: '{tool_name}'"}
@@ -201,11 +220,28 @@ Live System Telemetry:
         # Direct intent intercept for browser, youtube, and media automation
         prompt_lower = user_prompt.lower().strip()
         if any(w in prompt_lower for w in ("youtube", "open chrome", "browse", "navigate to", "oru vela")):
-            # Extract target
-            target = "oru vela irukumo" if "oru vela" in prompt_lower else "youtube"
+            # Extract target channel/video query
+            import re
+            target = "oru vela irukumo"
+            search_match = re.search(r"search\s+(?:for\s+)?([a-zA-Z0-9_\s]+?)(?:\s+channel|\s*,\s*|\s+then|\s+subscribe|$)", prompt_lower)
+            if search_match:
+                extracted = search_match.group(1).strip()
+                if extracted and extracted != "youtube":
+                    target = extracted
+            elif "oru vela" in prompt_lower:
+                target = "oru vela irukumo"
+
+            subscribe_flag = "subscribe" in prompt_lower
+            live_flag = "live" in prompt_lower
             emoji = "😊" if any(e in prompt_lower for e in ("emoji", "smile", "comment")) else None
-            res = browser_controller.execute_youtube_action(target, comment_or_emoji=emoji)
-            msg = res.get("message", "Opening YouTube for you, Sir.")
+
+            res = browser_controller.execute_youtube_action(
+                target,
+                subscribe=subscribe_flag,
+                find_live=live_flag,
+                comment_or_emoji=emoji
+            )
+            msg = res.get("message", "Processing YouTube workflow in Chrome for you, Sir.")
             memory.add_message(session_id, "user", user_prompt)
             memory.add_message(session_id, "assistant", msg)
             if on_chunk:

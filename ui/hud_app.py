@@ -20,7 +20,9 @@ from automation.file_manager import file_manager
 from automation.system_control import system_control
 from automation.deep_research import deep_research
 from automation.daily_briefing import daily_briefing
+from automation.code_interpreter import code_interpreter
 from vision.visual_analyzer import visual_analyzer
+from core.react_agent import OpenJarvisAgentManager
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 INDEX_HTML = STATIC_DIR / "index.html"
@@ -29,15 +31,23 @@ INDEX_HTML = STATIC_DIR / "index.html"
 class JarvisApiBridge:
     def __init__(self):
         self.auto_speak = config.get("voice", "auto_speak_responses", True)
+        self.agent_manager = OpenJarvisAgentManager(brain)
 
     def get_telemetry(self) -> Dict[str, Any]:
         return telemetry.get_full_telemetry()
 
     def process_user_message(self, message: str) -> str:
-        reply = brain.generate_response(message)
+        reply = self.agent_manager.route_query(message)
         if self.auto_speak:
             speaker.speak(reply)
         return reply
+
+    def set_agent_mode(self, mode: str) -> Dict[str, Any]:
+        success = self.agent_manager.set_agent_mode(mode)
+        return {"success": success, "mode": mode}
+
+    def execute_code(self, code: str) -> Dict[str, Any]:
+        return code_interpreter.execute_python(code)
 
     def listen_voice(self) -> str:
         text = listener.listen_once(timeout=5.0)
