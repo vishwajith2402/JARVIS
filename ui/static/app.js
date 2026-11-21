@@ -74,7 +74,10 @@ async function sendMessage() {
   appendMessage("You", text, "user");
   input.value = "";
 
-  setOrbStatus("Processing request...", true);
+  const statusMsg = currentAgentMode === "code_interpreter"
+    ? "Generating code and preparing sandbox..."
+    : (currentAgentMode === "deep_research" ? "Synthesizing deep knowledge base..." : "Processing request...");
+  setOrbStatus(statusMsg, true);
 
   try {
     if (window.pywebview && window.pywebview.api) {

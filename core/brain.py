@@ -391,7 +391,7 @@ Live System Telemetry:
             data=json.dumps(payload).encode("utf-8"),
             headers={"Content-Type": "application/json"}
         )
-        with urllib.request.urlopen(req, timeout=35) as resp:
+        with urllib.request.urlopen(req, timeout=180) as resp:
             data = json.loads(resp.read().decode("utf-8"))
             if self._active_provider == "ollama":
                 return data.get("message", {}).get("content", "")
