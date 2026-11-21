@@ -120,6 +120,10 @@ class UniversalAgentBrain:
                 extra_args = args.get("args", [])
                 return app_controller.launch_app(app_name, extra_args)
 
+            elif tool_name == "close_application":
+                app_name = args.get("app_name", "")
+                return app_controller.close_app(app_name)
+
             elif tool_name == "find_projects":
                 root = args.get("root_dir")
                 return {"projects": file_manager.find_projects(root)}
@@ -224,6 +228,20 @@ Live System Telemetry:
                             on_chunk(msg)
                         return msg
                     break
+
+        # Direct intent intercept for closing/terminating any application on the PC
+        # e.g., "close excel", "exit spotify", "terminate discord", "kill notepad"
+        if any(prompt_lower.startswith(prefix) for prefix in ("close ", "exit ", "kill ", "quit ", "stop ", "terminate ")):
+            for prefix in ("close ", "exit ", "kill ", "quit ", "stop ", "terminate "):
+                if prompt_lower.startswith(prefix):
+                    target_app = prompt_lower[len(prefix):].strip().rstrip(".!?,")
+                    res = app_controller.close_app(target_app)
+                    msg = res.get("message", f"Closed '{target_app}', Sir.")
+                    memory.add_message(session_id, "user", user_prompt)
+                    memory.add_message(session_id, "assistant", msg)
+                    if on_chunk:
+                        on_chunk(msg)
+                    return msg
 
         # Handle offline fallback with smart heuristics
         if self._active_provider == "offline":

@@ -41,12 +41,26 @@ class HermesToolParser:
             "type": "function",
             "function": {
                 "name": "open_application",
-                "description": "Launch or focus an application on Windows (e.g. vscode, chrome, terminal, notepad).",
+                "description": "Launch or focus an application on Windows (e.g. vscode, chrome, terminal, notepad, excel, spotify).",
                 "parameters": {
                     "type": "object",
                     "properties": {
                         "app_name": {"type": "string", "description": "The name of the application to open."},
-                        "args": {"type": "array", "items": {"type": "string"}, "description": "Optional command line arguments, such as a directory path."}
+                        "args": {"type": "array", "items": {"type": "string"}, "description": "Optional command line arguments."}
+                    },
+                    "required": ["app_name"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "close_application",
+                "description": "Close or terminate a running application or window by name (e.g. chrome, excel, spotify, notepad, calculator).",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "app_name": {"type": "string", "description": "The name or window title of the application to close."}
                     },
                     "required": ["app_name"]
                 }

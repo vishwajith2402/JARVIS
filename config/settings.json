@@ -62,6 +62,7 @@
       ],
       "level_2_confirm": [
         "open_application",
+        "close_application",
         "create_file",
         "edit_file",
         "create_folder",

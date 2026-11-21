@@ -205,5 +205,58 @@ class UniversalAppController:
                     pass
         return False
 
+    def close_app(self, app_name: str, force: bool = False) -> Dict[str, Any]:
+        """
+        Gracefully or forcefully close any running application by software name, window title, or executable name.
+        Uses 3-stage shutdown:
+        1. Sends WM_CLOSE to visible windows matching the software (graceful save prompt).
+        2. Resolves binary name and terminates running processes via taskkill.
+        3. PSUtil process kill fallback.
+        """
+        import psutil
+        import win32con
+        import win32gui
+
+        query = app_name.lower().strip()
+        closed_count = 0
+
+        # Stage 1: Graceful window close via WM_CLOSE
+        windows = self.list_visible_windows()
+        for w in windows:
+            title_lower = w["title"].lower()
+            if query in title_lower or any(token in title_lower for token in query.split()):
+                try:
+                    win32gui.PostMessage(w["hwnd"], win32con.WM_CLOSE, 0, 0)
+                    closed_count += 1
+                except Exception:
+                    pass
+
+        # Stage 2: Match running processes by name or resolved binary
+        target_path = self.find_software(query)
+        exe_name = os.path.basename(target_path) if target_path else f"{query}.exe"
+
+        for proc in psutil.process_iter(['pid', 'name']):
+            try:
+                pname = proc.info['name'].lower()
+                if query in pname or pname == exe_name.lower():
+                    proc.terminate()
+                    closed_count += 1
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+
+        if closed_count > 0:
+            return {"success": True, "message": f"Closed '{app_name}' successfully, Sir."}
+
+        # Stage 3: Windows taskkill fallback
+        try:
+            cmd = ["taskkill", "/F" if force else "/T", "/IM", exe_name]
+            res = subprocess.run(cmd, capture_output=True, text=True, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+            if res.returncode == 0:
+                return {"success": True, "message": f"Closed '{app_name}' ({exe_name}) via taskkill, Sir."}
+        except Exception:
+            pass
+
+        return {"success": False, "message": f"No active windows or processes found for '{app_name}' to close, Sir."}
+
 
 app_controller = UniversalAppController()
