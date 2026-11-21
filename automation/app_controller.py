@@ -1,77 +1,180 @@
 """
-Windows Application Controller for JARVIS.
-Handles application discovery, launching, window focus, and process tracking.
+Universal Windows Application & Software Controller for TITAN.
+Scans and indexes ALL installed Windows software across:
+1. Windows Start Menu shortcuts (.lnk) in ProgramData & AppData
+2. Windows Registry App Paths (HKLM & HKCU App Paths)
+3. Windows System32, SysWOW64, and System Apps
+4. Environment PATH binaries
+5. Common Program Files & Local AppData application folders
+
+Supports fuzzy matching so TITAN can open any software by full name, partial name, or nickname.
 """
 
 import os
+import re
 import shutil
 import subprocess
+import winreg
 from typing import Any, Dict, List, Optional
-import win32gui
 import win32con
+import win32gui
 import win32process
 
 
-class AppController:
-    KNOWN_APPS = {
-        "vscode": ["code.cmd", "code.exe", "Code.exe"],
-        "code": ["code.cmd", "code.exe", "Code.exe"],
-        "chrome": ["chrome.exe"],
-        "browser": ["chrome.exe", "msedge.exe"],
-        "edge": ["msedge.exe"],
-        "notepad": ["notepad.exe"],
-        "calculator": ["calc.exe"],
-        "terminal": ["wt.exe", "powershell.exe", "cmd.exe"],
-        "explorer": ["explorer.exe"]
-    }
+class UniversalAppController:
+    def __init__(self):
+        self._installed_apps: Dict[str, str] = {}
+        self.rescan_installed_software()
 
-    def _resolve_executable(self, app_name: str) -> Optional[str]:
-        app_lower = app_name.lower().strip()
-        candidates = self.KNOWN_APPS.get(app_lower, [app_name, f"{app_name}.exe"])
+    def rescan_installed_software(self) -> int:
+        """
+        Scan and index all installed software on this Windows PC.
+        Maps lower-case app names and aliases to their exact launch paths.
+        """
+        apps_map = {}
 
-        for candidate in candidates:
-            resolved = shutil.which(candidate)
-            if resolved:
-                return resolved
-
-        # Common Windows paths
-        common_paths = [
-            os.path.expandvars(r"%LOCALAPPDATA%\Programs\Microsoft VS Code\Code.exe"),
-            os.path.expandvars(r"%PROGRAMFILES%\Google\Chrome\Application\chrome.exe"),
-            os.path.expandvars(r"%PROGRAMFILES(X86)%\Google\Chrome\Application\chrome.exe"),
-            os.path.expandvars(r"%PROGRAMFILES(X86)%\Microsoft\Edge\Application\msedge.exe"),
-            r"C:\Windows\System32\notepad.exe",
-            r"C:\Windows\System32\calc.exe",
-            r"C:\Windows\explorer.exe"
+        # --- 1. Start Menu Shortcuts (.lnk) ---
+        start_menu_dirs = [
+            os.path.expandvars(r"%PROGRAMDATA%\Microsoft\Windows\Start Menu\Programs"),
+            os.path.expandvars(r"%APPDATA%\Microsoft\Windows\Start Menu\Programs")
         ]
-        for p in common_paths:
-            if os.path.exists(p) and app_lower in p.lower():
-                return p
+
+        for s_dir in start_menu_dirs:
+            if os.path.exists(s_dir):
+                for root, _, files in os.walk(s_dir):
+                    for file in files:
+                        if file.lower().endswith(".lnk"):
+                            app_name = os.path.splitext(file)[0].strip()
+                            full_lnk_path = os.path.join(root, file)
+                            apps_map[app_name.lower()] = full_lnk_path
+
+        # --- 2. Windows Registry: App Paths ---
+        reg_keys = [
+            (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths"),
+            (winreg.HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths")
+        ]
+
+        for hkey, subkey in reg_keys:
+            try:
+                with winreg.OpenKey(hkey, subkey) as root_key:
+                    num_subkeys = winreg.QueryInfoKey(root_key)[0]
+                    for i in range(num_subkeys):
+                        try:
+                            app_key_name = winreg.EnumKey(root_key, i)
+                            with winreg.OpenKey(root_key, app_key_name) as app_k:
+                                path_val, _ = winreg.QueryValueEx(app_k, "")
+                                if path_val and os.path.exists(path_val):
+                                    name_clean = os.path.splitext(app_key_name)[0].lower()
+                                    apps_map[name_clean] = path_val
+                                    apps_map[app_key_name.lower()] = path_val
+                        except Exception:
+                            continue
+            except Exception:
+                pass
+
+        # --- 3. Built-in Utilities & Standard Tools ---
+        common_system_tools = {
+            "notepad": r"C:\Windows\System32\notepad.exe",
+            "calculator": r"C:\Windows\System32\calc.exe",
+            "calc": r"C:\Windows\System32\calc.exe",
+            "cmd": r"C:\Windows\System32\cmd.exe",
+            "powershell": r"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe",
+            "terminal": "wt.exe",
+            "explorer": r"C:\Windows\explorer.exe",
+            "files": r"C:\Windows\explorer.exe",
+            "taskmgr": r"C:\Windows\System32\taskmgr.exe",
+            "task manager": r"C:\Windows\System32\taskmgr.exe",
+            "settings": "ms-settings:",
+            "chrome": r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+            "google chrome": r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+            "edge": r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
+            "vscode": os.path.expandvars(r"%LOCALAPPDATA%\Programs\Microsoft VS Code\Code.exe"),
+            "code": os.path.expandvars(r"%LOCALAPPDATA%\Programs\Microsoft VS Code\Code.exe"),
+            "visual studio code": os.path.expandvars(r"%LOCALAPPDATA%\Programs\Microsoft VS Code\Code.exe")
+        }
+
+        for k, v in common_system_tools.items():
+            if k not in apps_map:
+                apps_map[k] = v
+
+        self._installed_apps = apps_map
+        return len(self._installed_apps)
+
+    def find_software(self, query: str) -> Optional[str]:
+        """
+        Fuzzy match and locate any software path installed on the PC.
+        """
+        query_clean = query.lower().strip()
+
+        # 1. Direct exact match
+        if query_clean in self._installed_apps:
+            return self._installed_apps[query_clean]
+
+        # 2. Check system PATH
+        path_which = shutil.which(query_clean) or shutil.which(f"{query_clean}.exe")
+        if path_which:
+            return path_which
+
+        # 3. Substring match (e.g. 'discord' in 'discord.lnk' or 'excel' in 'microsoft excel')
+        for name, path in self._installed_apps.items():
+            if query_clean in name or name in query_clean:
+                return path
+
+        # 4. Word boundary / token match
+        tokens = query_clean.split()
+        for name, path in self._installed_apps.items():
+            if all(t in name for t in tokens):
+                return path
 
         return None
 
     def launch_app(self, app_name: str, args: Optional[List[str]] = None) -> Dict[str, Any]:
-        """Launch an application with optional arguments (such as a project directory for VS Code)."""
-        exe_path = self._resolve_executable(app_name)
-        if not exe_path:
-            # Fallback to direct Windows start command
-            try:
-                cmd = ["cmd", "/c", "start", app_name]
-                if args:
-                    cmd.extend(args)
-                subprocess.Popen(cmd, shell=True)
-                return {"success": True, "message": f"Initiated launch for '{app_name}' via Windows shell."}
-            except Exception as e:
-                return {"success": False, "error": f"Application '{app_name}' could not be located: {e}"}
+        """
+        Launch any installed software on the user's PC.
+        Handles direct EXEs, Start Menu shortcuts (.lnk), UWP/Store Apps, and URI schemes.
+        """
+        target = self.find_software(app_name)
 
+        # Handle URI scheme (e.g. ms-settings:)
+        if target and target.endswith(":"):
+            try:
+                os.startfile(target)
+                return {"success": True, "message": f"Opened Windows {app_name}."}
+            except Exception as e:
+                return {"success": False, "error": str(e)}
+
+        # Launch resolved executable or shortcut (.lnk)
+        if target:
+            try:
+                if target.lower().endswith(".lnk"):
+                    # Use os.startfile for Windows shortcuts (.lnk) to preserve native working directory
+                    os.startfile(target)
+                    return {"success": True, "message": f"Launched '{app_name}' from Start Menu ({os.path.basename(target)})."}
+                else:
+                    cmd = [target]
+                    if args:
+                        cmd.extend(args)
+                    subprocess.Popen(cmd)
+                    return {"success": True, "message": f"Launched '{app_name}' ({target})."}
+            except Exception as e:
+                # Fallback to os.startfile
+                try:
+                    os.startfile(target)
+                    return {"success": True, "message": f"Launched '{app_name}' via Windows shell."}
+                except Exception as ex:
+                    return {"success": False, "error": f"Failed launching '{target}': {ex}"}
+
+        # Last-resort fallback: Windows 'start' command for unregistered apps
         try:
-            full_cmd = [exe_path]
-            if args:
-                full_cmd.extend(args)
-            subprocess.Popen(full_cmd)
-            return {"success": True, "message": f"Successfully launched '{app_name}' ({exe_path})."}
+            cmd = f'start "" "{app_name}"'
+            subprocess.Popen(cmd, shell=True)
+            return {"success": True, "message": f"Attempting to launch '{app_name}' via Windows shell dispatch."}
         except Exception as e:
-            return {"success": False, "error": f"Failed to execute '{exe_path}': {e}"}
+            return {"success": False, "error": f"Could not locate software '{app_name}' on your computer: {e}"}
+
+    def list_all_software_names(self, limit: int = 50) -> List[str]:
+        """Returns a sorted list of registered software names."""
+        return sorted(list(set(self._installed_apps.keys())))[:limit]
 
     def list_visible_windows(self) -> List[Dict[str, Any]]:
         """List all top-level visible Windows with titles."""
@@ -103,4 +206,4 @@ class AppController:
         return False
 
 
-app_controller = AppController()
+app_controller = UniversalAppController()

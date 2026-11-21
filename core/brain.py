@@ -195,7 +195,7 @@ Live System Telemetry:
         self._detect_provider()
 
         # Direct intent intercept for browser, youtube, and media automation
-        prompt_lower = user_prompt.lower()
+        prompt_lower = user_prompt.lower().strip()
         if any(w in prompt_lower for w in ("youtube", "open chrome", "browse", "navigate to", "oru vela")):
             # Extract target
             target = "oru vela irukumo" if "oru vela" in prompt_lower else "youtube"
@@ -207,6 +207,23 @@ Live System Telemetry:
             if on_chunk:
                 on_chunk(msg)
             return msg
+
+        # Direct intent intercept for opening any application on the PC
+        # e.g., "open excel", "launch discord", "start spotify", "open epic games"
+        if any(prompt_lower.startswith(prefix) for prefix in ("open ", "launch ", "start ", "run ")) and not any(w in prompt_lower for w in ("python", "code in", "script")):
+            for prefix in ("open ", "launch ", "start ", "run "):
+                if prompt_lower.startswith(prefix):
+                    target_app = prompt_lower[len(prefix):].strip().rstrip(".!?,")
+                    # Check if target app exists in our PC registry index
+                    if app_controller.find_software(target_app):
+                        res = app_controller.launch_app(target_app)
+                        msg = res.get("message", f"Launched '{target_app}', Sir.")
+                        memory.add_message(session_id, "user", user_prompt)
+                        memory.add_message(session_id, "assistant", msg)
+                        if on_chunk:
+                            on_chunk(msg)
+                        return msg
+                    break
 
         # Handle offline fallback with smart heuristics
         if self._active_provider == "offline":
