@@ -1,5 +1,5 @@
 """
-J.A.R.V.I.S. - Personal AI Desktop Assistant
+T.I.T.A.N. - Personal Tactical AI Desktop Assistant
 Main Entry Point.
 
 Usage:
@@ -21,8 +21,8 @@ from voice.speaker import speaker
 def print_banner():
     banner = """
   +------------------------------------------+
-  |   J.A.R.V.I.S.  Tactical Desktop AI      |
-  |   Desktop Tactical AI Core // v1.1.0     |
+  |    T.I.T.A.N.  Tactical Desktop AI       |
+  |   Desktop Tactical AI Core // v1.2.0     |
   |   Local GPU Acceleration (RTX 3050)      |
   +------------------------------------------+
     """
@@ -31,7 +31,7 @@ def print_banner():
 
 def autostart_agent(on_status=None) -> dict:
     """
-    Automatically find and start the AI engine before JARVIS boots.
+    Automatically find and start the AI engine before TITAN boots.
     Returns the launch result dict from AgentLauncher.
     """
     from config.config_manager import config
@@ -56,7 +56,7 @@ def autostart_agent(on_status=None) -> dict:
 
 def run_diagnostics(auto_launch: bool = True):
     print_banner()
-    print("[BOOT] Initializing J.A.R.V.I.S. subsystems...")
+    print("[BOOT] Initializing T.I.T.A.N. subsystems...")
     time.sleep(0.3)
 
     # --- Step 1: Hardware Telemetry ---
@@ -91,11 +91,11 @@ def run_diagnostics(auto_launch: bool = True):
     voices = speaker.get_available_voices()
     print(f"  SAPI: {'READY' if True else 'ERROR'} ({len(voices)} voice packs detected)")
 
-    print("\n[BOOT] All subsystems initialized. JARVIS is ready.\n")
+    print("\n[BOOT] All subsystems initialized. TITAN is ready.\n")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="J.A.R.V.I.S. Personal AI Desktop System")
+    parser = argparse.ArgumentParser(description="T.I.T.A.N. Personal Tactical AI Desktop Assistant")
     parser.add_argument("--mode", choices=["dashboard", "background", "check"],
                         default="dashboard",
                         help="dashboard = GUI HUD  |  background = Voice Daemon  |  check = diagnostics only")

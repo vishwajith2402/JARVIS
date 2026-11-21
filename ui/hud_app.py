@@ -107,14 +107,14 @@ def run_hud():
     """Launch the HUD desktop window."""
     api = JarvisApiBridge()
     window = webview.create_window(
-        title="J.A.R.V.I.S. // Desktop Tactical AI Core",
+        title="T.I.T.A.N. // Desktop Tactical AI Core",
         url=str(INDEX_HTML.resolve()),
         js_api=api,
         width=1280,
         height=820,
         resizable=True,
         min_size=(960, 600),
-        background_color="#050a14"
+        background_color="#030712"
     )
     webview.start(debug=False)
 

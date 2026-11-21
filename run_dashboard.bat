@@ -1,9 +1,9 @@
 @echo off
-title J.A.R.V.I.S. // Desktop Tactical AI Core
+title T.I.T.A.N. // Desktop Tactical AI Core
 cd /d "D:\Practice Projects\JARVIS"
 echo.
 echo  ========================================================
-echo   J.A.R.V.I.S.  Desktop Tactical AI  //  v1.1.0
+echo   T.I.T.A.N.  Desktop Tactical AI  //  v1.2.0
 echo   Auto-launching AI Agent + Desktop HUD...
 echo  ========================================================
 echo.

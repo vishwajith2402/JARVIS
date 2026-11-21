@@ -1,5 +1,5 @@
 /**
- * J.A.R.V.I.S. Desktop Dashboard Frontend Controller v1.2.0
+ * T.I.T.A.N. Desktop Dashboard Frontend Controller v1.2.0
  * Multi-Tab Tactical Interface with Real-Time Audio FX & Arc Reactor Visualizer
  */
 
@@ -154,14 +154,14 @@ async function sendMessage() {
   try {
     if (window.pywebview && window.pywebview.api) {
       const response = await window.pywebview.api.process_user_message(text);
-      appendMessage("J.A.R.V.I.S.", response, "jarvis");
+      appendMessage("T.I.T.A.N.", response, "jarvis");
     } else {
       setTimeout(() => {
-        appendMessage("J.A.R.V.I.S.", "System preview mode response: " + text, "jarvis");
+        appendMessage("T.I.T.A.N.", "System preview mode response: " + text, "jarvis");
       }, 500);
     }
   } catch (err) {
-    appendMessage("J.A.R.V.I.S.", "Subsystem communication error: " + err, "jarvis");
+    appendMessage("T.I.T.A.N.", "Subsystem communication error: " + err, "jarvis");
   } finally {
     setArcStatus("AWAITING INSTRUCTION, SIR");
   }
@@ -219,9 +219,9 @@ async function quickAction(actionType) {
 
   try {
     const result = await window.pywebview.api.trigger_quick_action(actionType);
-    appendMessage("J.A.R.V.I.S.", result, "jarvis");
+    appendMessage("T.I.T.A.N.", result, "jarvis");
   } catch (err) {
-    appendMessage("J.A.R.V.I.S.", `Action error: ${err}`, "jarvis");
+    appendMessage("T.I.T.A.N.", `Action error: ${err}`, "jarvis");
   } finally {
     setArcStatus("AWAITING INSTRUCTION, SIR");
   }

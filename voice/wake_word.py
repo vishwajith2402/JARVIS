@@ -9,7 +9,7 @@ from typing import Callable, Optional
 
 class WakeWordDetector:
     def __init__(self, wake_words: Optional[list] = None):
-        self.wake_words = wake_words or ["jarvis", "hey jarvis", "ok jarvis"]
+        self.wake_words = wake_words or ["titan", "hey titan", "ok titan", "jarvis", "hey jarvis"]
         self._pattern = re.compile(
             r'\b(?:' + '|'.join(re.escape(w) for w in self.wake_words) + r')\b',
             re.IGNORECASE
