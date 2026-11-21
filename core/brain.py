@@ -317,6 +317,25 @@ Live System Telemetry:
                         on_chunk(msg)
                     return msg
 
+        # Direct intent intercept for software/code generation requests
+        coding_markers = (
+            "write code", "write a script", "write python", "create a python",
+            "create an app", "create a script", "build an app", "build a python",
+            "code a ", "write a program", "create a program", "build a program"
+        )
+        if any(marker in prompt_lower for marker in coding_markers) or (
+            any(verb in prompt_lower for verb in ("create a ", "build a ", "make a ", "write a ")) and
+            any(noun in prompt_lower for noun in ("calculator", "game", "ui", "interface", "scraper", "crawler", "bot", "tool", "converter", "timer", "clock", "editor"))
+        ):
+            from automation.coding_agent import CodingAgent
+            coder = CodingAgent(self)
+            msg = coder.generate_and_deliver_code(user_prompt, session_id=session_id)
+            memory.add_message(session_id, "user", user_prompt)
+            memory.add_message(session_id, "assistant", msg)
+            if on_chunk:
+                on_chunk(msg)
+            return msg
+
         # Handle offline fallback with smart heuristics
         if self._active_provider == "offline":
             return self._handle_offline_intent(user_prompt)

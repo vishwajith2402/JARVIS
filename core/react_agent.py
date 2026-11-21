@@ -210,7 +210,7 @@ class OpenJarvisAgentManager:
 
         # 4. Code Interpreter Agent (OpenHands style)
         elif mode in ("code_interpreter", "native_openhands"):
-            # Check if prompt contains code to execute
+            # Check if prompt contains code to execute directly
             from automation.code_interpreter import code_interpreter
             code_match = re.search(r"```python(.*?)```", user_prompt, re.DOTALL)
             if code_match:
@@ -218,61 +218,10 @@ class OpenJarvisAgentManager:
                 res = code_interpreter.execute_python(code)
                 return f"Execution Result:\nStdout: {res.get('stdout')}\nStderr: {res.get('stderr')}\nTime: {res.get('execution_time_sec')}s"
 
-            # Check if user is asking to create, make, build, or write code/application
-            coding_keywords = ("create", "make", "build", "write", "code", "generate", "develop", "calculator", "game", "ui", "script", "app")
-            prompt_lower = user_prompt.lower()
-            if any(w in prompt_lower for w in coding_keywords):
-                code_prompt = [
-                    {"role": "system", "content": (
-                        "You are TITAN's Code Assistant. Write clean, complete, and functional Python code for the user's request. "
-                        "If a GUI or user interface is requested, use Python's built-in `tkinter` library. "
-                        "Always wrap your Python code in a ```python ... ``` markdown block. "
-                        "Provide a brief, polite explanation to the user as Sir."
-                    )},
-                    {"role": "user", "content": user_prompt}
-                ]
-                try:
-                    code_reply = self.brain._dispatch_chat(code_prompt)
-                    # Automatically extract and save the code to the sandbox
-                    extracted = re.search(r"```python(.*?)```", code_reply, re.DOTALL)
-                    if extracted:
-                        code_str = extracted.group(1).strip()
-                        app_name = "calculator" if "calculator" in prompt_lower else "generated_app"
-                        from automation.file_manager import file_manager
-                        from pathlib import Path
-                        import tempfile
-                        
-                        # Determine writable sandbox path
-                        sandbox_dir = Path(r"D:\Practice Projects\JARVIS\data\sandbox")
-                        try:
-                            sandbox_dir.mkdir(parents=True, exist_ok=True)
-                            save_path = sandbox_dir / f"{app_name}.py"
-                        except Exception:
-                            save_path = Path(tempfile.gettempdir()) / f"{app_name}.py"
-
-                        file_manager.write_file(str(save_path), code_str, overwrite=True)
-
-                        # Auto-launch GUI app in a detached background process so the user can interact immediately!
-                        if any(gui_w in prompt_lower for gui_w in ("ui", "gui", "interface", "window", "calculator", "app", "game")):
-                            import subprocess, sys
-                            try:
-                                subprocess.Popen([sys.executable, str(save_path)])
-                                launch_note = f"\n\n[Status: Application successfully created, saved to `{save_path}`, and launched on your desktop, Sir.]"
-                                return code_reply + launch_note
-                            except Exception:
-                                pass
-
-                    return code_reply
-                except TimeoutError:
-                    return (
-                        "My apologies, Sir. Generating this application required more time than the default window. "
-                        "I have extended the timeout to 180 seconds; please ask again to complete the generation."
-                    )
-                except Exception as e:
-                    return f"My apologies, Sir. Code generation encountered an issue: {e}"
-
-            # Otherwise use ReAct loop with code interpreter enabled
-            return self.react_agent.execute_react_loop(user_prompt, session_id=session_id)
+            # Use dedicated OpenHands Coding Agent for generating complete software & scripts
+            from automation.coding_agent import CodingAgent
+            coder = CodingAgent(self.brain)
+            return coder.generate_and_deliver_code(user_prompt, session_id=session_id)
 
         # 5. Native ReAct Agent & Orchestrator (Default)
         else:
