@@ -428,8 +428,10 @@ body::after {
 .center-card {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   border-color: rgba(0, 240, 255, 0.35);
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .arc-reactor-wrapper {
@@ -438,6 +440,7 @@ body::after {
   align-items: center;
   justify-content: center;
   padding: 6px 0;
+  flex-shrink: 0;
 }
 
 .arc-status-badge {
@@ -455,19 +458,35 @@ body::after {
 
 /* ==================== CHAT TERMINAL ==================== */
 .chat-terminal {
-  flex: 1;
-  overflow-y: auto;
+  flex: 1 1 auto;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  min-height: 0;
   margin: 8px 0;
-  padding-right: 6px;
+  padding-right: 8px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  scroll-behavior: smooth;
 }
 
-.chat-terminal::-webkit-scrollbar { width: 4px; }
-.chat-terminal::-webkit-scrollbar-thumb {
-  background: rgba(0, 240, 255, 0.25);
+.chat-terminal::-webkit-scrollbar { 
+  width: 6px; 
+}
+
+.chat-terminal::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.25);
   border-radius: 4px;
+}
+
+.chat-terminal::-webkit-scrollbar-thumb {
+  background: var(--border-cyan);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+  border-radius: 4px;
+}
+
+.chat-terminal::-webkit-scrollbar-thumb:hover {
+  background: var(--text-cyan-bright);
 }
 
 .chat-msg {
@@ -476,6 +495,8 @@ body::after {
   line-height: 1.5;
   font-size: 15px;
   user-select: text;
+  flex-shrink: 0;
+  word-break: break-word;
 }
 
 .chat-msg.jarvis {
@@ -518,6 +539,10 @@ body::after {
   background: rgba(0, 240, 255, 0.04);
   border: 1px solid var(--border-cyan-glow);
   border-radius: 6px;
+  padding: 6px 8px;
+  flex-shrink: 0;
+  margin-top: auto;
+}
   padding: 6px 8px;
 }
 

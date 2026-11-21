@@ -138,7 +138,11 @@ function appendMessage(sender, text, roleClass) {
   msgDiv.appendChild(tag);
   msgDiv.appendChild(content);
   chatBox.appendChild(msgDiv);
-  chatBox.scrollTop = chatBox.scrollHeight;
+  
+  // Smooth auto-scroll pinning to bottom
+  requestAnimationFrame(() => {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
 }
 
 async function sendMessage() {
