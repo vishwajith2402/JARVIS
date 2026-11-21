@@ -18,6 +18,8 @@ from voice.listener import listener
 from automation.app_controller import app_controller
 from automation.file_manager import file_manager
 from automation.system_control import system_control
+from automation.deep_research import deep_research
+from automation.daily_briefing import daily_briefing
 from vision.visual_analyzer import visual_analyzer
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
@@ -91,6 +93,17 @@ class JarvisApiBridge:
         elif action_type == "lock_pc":
             system_control.lock_workstation()
             return "Workstation locked for your security, Sir."
+
+        elif action_type == "morning_digest":
+            res = daily_briefing.generate_morning_digest(speak=self.auto_speak)
+            return res.get("digest", "Daily briefing generated, Sir.")
+
+        elif action_type == "index_knowledge":
+            res = deep_research.index_directory(str(Path(__file__).resolve().parent.parent))
+            msg = res.get("message", "Local files indexed into knowledge base.")
+            if self.auto_speak:
+                speaker.speak(msg)
+            return msg
 
         elif action_type == "check_updates":
             res = updater.check_git_updates()
