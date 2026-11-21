@@ -129,7 +129,70 @@ class FileManager:
         p = Path(dir_path)
         try:
             p.mkdir(parents=True, exist_ok=True)
-            return {"success": True, "path": str(p.resolve())}
+            return {"success": True, "path": str(p.resolve()), "message": f"Created directory '{dir_path}'"}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+    def write_file(self, file_path: str, content: str, overwrite: bool = True) -> Dict[str, Any]:
+        """Write text content to a file. Creates parent directories automatically."""
+        p = Path(file_path)
+        if p.exists() and not overwrite:
+            return {"success": False, "error": f"File '{file_path}' already exists and overwrite=False."}
+        try:
+            p.parent.mkdir(parents=True, exist_ok=True)
+            with open(p, "w", encoding="utf-8") as f:
+                f.write(content)
+            return {
+                "success": True,
+                "path": str(p.resolve()),
+                "bytes_written": len(content.encode("utf-8")),
+                "message": f"Successfully wrote {len(content)} characters to '{file_path}'"
+            }
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+    def append_file(self, file_path: str, content: str) -> Dict[str, Any]:
+        """Append text content to an existing or new file."""
+        p = Path(file_path)
+        try:
+            p.parent.mkdir(parents=True, exist_ok=True)
+            with open(p, "a", encoding="utf-8") as f:
+                f.write(content)
+            return {"success": True, "path": str(p.resolve()), "message": f"Appended content to '{file_path}'"}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+    def list_directory(self, dir_path: str) -> Dict[str, Any]:
+        """List files and subdirectories in target path."""
+        p = Path(dir_path)
+        if not p.exists() or not p.is_dir():
+            return {"success": False, "error": f"Directory '{dir_path}' does not exist."}
+        try:
+            items = []
+            for item in p.iterdir():
+                items.append({
+                    "name": item.name,
+                    "is_dir": item.is_dir(),
+                    "size_bytes": item.stat().st_size if item.is_file() else None,
+                    "modified": item.stat().st_mtime
+                })
+            return {"success": True, "path": str(p.resolve()), "total_items": len(items), "items": items}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+    def delete_file(self, file_path: str) -> Dict[str, Any]:
+        """Safely delete a file."""
+        p = Path(file_path)
+        if not p.exists():
+            return {"success": False, "error": f"Path '{file_path}' does not exist."}
+        try:
+            if p.is_file():
+                p.unlink()
+                return {"success": True, "message": f"Deleted file '{file_path}'"}
+            elif p.is_dir():
+                import shutil
+                shutil.rmtree(p)
+                return {"success": True, "message": f"Deleted directory '{file_path}'"}
         except Exception as e:
             return {"success": False, "error": str(e)}
 

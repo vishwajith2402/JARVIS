@@ -38,13 +38,21 @@ AVAILABLE TOOLS:
 2. close_application(app_name: str) - Gracefully or forcefully terminates any running software or process on the PC.
 3. browser_action(action: str, target: str, extra: Optional[str]) - Automates Chrome/Playwright browsing: YouTube search, channels, subscribing, live stream chat, emoji sending, and URL navigation. Windows stay open.
 4. execute_python(code: str) - Executes Python code in a local sandbox, returning stdout, stderr, and execution time.
-5. deep_research(query: str) - Multi-hop search across indexed local projects, documents, codebases, and offline knowledge base.
-6. web_search(query: str) - Performs web search queries.
-7. search_files(pattern: str, root_dir: Optional[str]) - Searches for files matching a pattern.
-8. read_file(path: str) - Safely reads file contents.
-9. capture_screen(prompt: Optional[str]) - Takes a screenshot and analyzes desktop contents.
-10. get_system_stats() - Live CPU, GPU VRAM, RAM, and Battery telemetry.
-11. morning_digest() - Generates system health and daily productivity briefing.
+5. execute_shell(command: str) - Executes PowerShell or CMD commands in workspace.
+6. write_file(path: str, content: str, overwrite: bool) - Writes or creates text/code files on disk.
+7. read_file(path: str) - Safely reads file contents.
+8. search_files(pattern: str, root_dir: Optional[str]) - Searches for files matching a pattern.
+9. list_directory(dir_path: str) - Lists files and subdirectories.
+10. gui_click(x: int, y: int, button: str, double: bool) - Clicks mouse at screen coordinates.
+11. gui_type(text: str) - Types keystrokes directly into active software.
+12. gui_hotkey(keys: List[str]) - Sends keyboard shortcuts (e.g. ['ctrl', 's'], ['alt', 'f4']).
+13. deep_research(query: str) - Multi-hop search across indexed local projects, documents, and codebases.
+14. web_search(query: str) - Performs web search queries.
+15. capture_screen(prompt: Optional[str]) - Takes a screenshot and analyzes desktop contents.
+16. get_system_stats() - Live CPU, GPU VRAM, RAM, and Battery telemetry.
+17. set_brightness(level: int) - Adjusts monitor brightness.
+18. empty_recycle_bin() - Cleans Windows Recycle Bin.
+19. morning_digest() - Generates system health and daily productivity briefing.
 
 RULES:
 - NEVER say "I don't have internet access" or "I cannot interact with online content". You have the `browser_action` tool and `web_search` tool specifically to browse the internet, interact with websites, open YouTube, subscribe, and chat!

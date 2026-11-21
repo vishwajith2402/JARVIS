@@ -28,19 +28,35 @@ class PermissionManager:
             "list_windows": PermissionLevel.LEVEL_1_AUTO,
             "web_search": PermissionLevel.LEVEL_1_AUTO,
             "inspect_project": PermissionLevel.LEVEL_1_AUTO,
+            "browser_action": PermissionLevel.LEVEL_1_AUTO,
+            "deep_research": PermissionLevel.LEVEL_1_AUTO,
+            "morning_digest": PermissionLevel.LEVEL_1_AUTO,
+            "list_directory": PermissionLevel.LEVEL_1_AUTO,
+            "capture_screen": PermissionLevel.LEVEL_1_AUTO,
+            "volume_control": PermissionLevel.LEVEL_1_AUTO,
+            "set_brightness": PermissionLevel.LEVEL_1_AUTO,
+            "gui_click": PermissionLevel.LEVEL_1_AUTO,
+            "gui_type": PermissionLevel.LEVEL_1_AUTO,
+            "gui_hotkey": PermissionLevel.LEVEL_1_AUTO,
 
             # Level 2
             "open_application": PermissionLevel.LEVEL_2_CONFIRM,
+            "close_application": PermissionLevel.LEVEL_2_CONFIRM,
+            "write_file": PermissionLevel.LEVEL_2_CONFIRM,
             "create_file": PermissionLevel.LEVEL_2_CONFIRM,
             "edit_file": PermissionLevel.LEVEL_2_CONFIRM,
             "create_folder": PermissionLevel.LEVEL_2_CONFIRM,
             "take_screenshot": PermissionLevel.LEVEL_2_CONFIRM,
+            "execute_python": PermissionLevel.LEVEL_2_CONFIRM,
+            "empty_recycle_bin": PermissionLevel.LEVEL_2_CONFIRM,
 
             # Level 3
             "delete_file": PermissionLevel.LEVEL_3_RESTRICTED,
             "delete_folder": PermissionLevel.LEVEL_3_RESTRICTED,
             "kill_process": PermissionLevel.LEVEL_3_RESTRICTED,
             "run_shell_command": PermissionLevel.LEVEL_3_RESTRICTED,
+            "execute_shell": PermissionLevel.LEVEL_3_RESTRICTED,
+            "lock_workstation": PermissionLevel.LEVEL_3_RESTRICTED,
         }
         self.confirmation_callback: Optional[Callable[[str, str, Dict[str, Any]], bool]] = None
 

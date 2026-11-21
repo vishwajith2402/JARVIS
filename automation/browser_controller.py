@@ -219,6 +219,37 @@ class BrowserController:
             )
         }
 
+    def google_search(self, query: str) -> Dict[str, Any]:
+        """Search Google in persistent browser and keep open."""
+        url = f"https://www.google.com/search?q={urllib.parse.quote(query)}"
+        return self.open_url(url)
+
+    def browse_and_extract(self, url: str) -> Dict[str, Any]:
+        """Navigate to any URL, extract readable text, and keep browser alive."""
+        target = url if url.startswith("http") else f"https://{url}"
+        try:
+            from playwright.sync_api import sync_playwright
+            with sync_playwright() as p:
+                browser = p.chromium.launch(headless=True)
+                page = browser.new_page()
+                page.goto(target, timeout=25000)
+                title = page.title()
+                # Get visible body text up to 2000 chars
+                text = page.inner_text("body")[:2000]
+                browser.close()
+                return {"success": True, "title": title, "content": text, "url": target}
+        except Exception:
+            # Fallback to local HTTP GET
+            import urllib.request
+            try:
+                req = urllib.request.Request(target, headers={"User-Agent": "Mozilla/5.0"})
+                with urllib.request.urlopen(req, timeout=10) as resp:
+                    html = resp.read().decode("utf-8", errors="replace")
+                    clean_text = re.sub(r'<[^>]+>', ' ', html)[:2000]
+                    return {"success": True, "title": target, "content": clean_text.strip(), "url": target}
+            except Exception as e:
+                return {"success": False, "error": str(e)}
+
     def navigate_and_interact(self, url: str) -> Dict[str, Any]:
         """Generic web navigation."""
         return self.open_url(url)

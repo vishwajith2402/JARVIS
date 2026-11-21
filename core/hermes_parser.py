@@ -222,6 +222,116 @@ class HermesToolParser:
                 "description": "Generate a comprehensive daily system briefing, battery status, and tasks.",
                 "parameters": {"type": "object", "properties": {}, "required": []}
             }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "write_file",
+                "description": "Write or create files with text or code on the filesystem.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "path": {"type": "string", "description": "Full path to file."},
+                        "content": {"type": "string", "description": "Text or code to write."},
+                        "overwrite": {"type": "boolean", "description": "Whether to overwrite if exists."}
+                    },
+                    "required": ["path", "content"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "list_directory",
+                "description": "List files and folders in any directory.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "dir_path": {"type": "string", "description": "Target folder path."}
+                    },
+                    "required": ["dir_path"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "execute_shell",
+                "description": "Execute PowerShell or CMD commands in workspace (install packages, system queries, etc.).",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "command": {"type": "string", "description": "Command string to execute."}
+                    },
+                    "required": ["command"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "gui_click",
+                "description": "Native Windows mouse click at (x, y) coordinates on screen.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "x": {"type": "integer", "description": "X coordinate."},
+                        "y": {"type": "integer", "description": "Y coordinate."},
+                        "button": {"type": "string", "enum": ["left", "right", "middle"], "description": "Mouse button."},
+                        "double": {"type": "boolean", "description": "Whether double click."}
+                    }
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "gui_type",
+                "description": "Type text directly into the focused window/application.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "text": {"type": "string", "description": "Text to type into window."}
+                    },
+                    "required": ["text"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "gui_hotkey",
+                "description": "Send keyboard shortcut sequence (e.g. ['ctrl', 's'], ['alt', 'f4'], ['enter']).",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "keys": {"type": "array", "items": {"type": "string"}, "description": "List of key names."}
+                    },
+                    "required": ["keys"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "set_brightness",
+                "description": "Adjust monitor brightness (0 to 100%).",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "level": {"type": "integer", "description": "Brightness percentage."}
+                    },
+                    "required": ["level"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "empty_recycle_bin",
+                "description": "Clean and empty the Windows Recycle Bin.",
+                "parameters": {"type": "object", "properties": {}, "required": []}
+            }
         }
     ]
 

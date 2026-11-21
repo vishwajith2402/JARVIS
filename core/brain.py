@@ -189,6 +189,44 @@ class UniversalAgentBrain:
                 from automation.daily_briefing import daily_briefing
                 return daily_briefing.generate_morning_digest()
 
+            elif tool_name == "write_file":
+                p = args.get("path", "")
+                c = args.get("content", "")
+                ow = args.get("overwrite", True)
+                return file_manager.write_file(p, c, overwrite=ow)
+
+            elif tool_name == "list_directory":
+                dp = args.get("dir_path", ".")
+                return file_manager.list_directory(dp)
+
+            elif tool_name == "execute_shell":
+                from automation.code_interpreter import code_interpreter
+                cmd = args.get("command", "")
+                return code_interpreter.execute_shell(cmd)
+
+            elif tool_name == "gui_click":
+                from automation.gui_controller import gui_controller
+                return gui_controller.click(
+                    x=args.get("x"),
+                    y=args.get("y"),
+                    button=args.get("button", "left"),
+                    double=args.get("double", False)
+                )
+
+            elif tool_name == "gui_type":
+                from automation.gui_controller import gui_controller
+                return gui_controller.type_text(args.get("text", ""))
+
+            elif tool_name == "gui_hotkey":
+                from automation.gui_controller import gui_controller
+                return gui_controller.send_hotkey(args.get("keys", []))
+
+            elif tool_name == "set_brightness":
+                return system_control.set_brightness(args.get("level", 50))
+
+            elif tool_name == "empty_recycle_bin":
+                return system_control.empty_recycle_bin()
+
             else:
                 return {"error": f"Unknown tool: '{tool_name}'"}
         except Exception as e:
