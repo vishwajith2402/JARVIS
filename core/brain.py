@@ -323,20 +323,37 @@ Live System Telemetry:
                 on_chunk(reply)
             return reply
         if any(w in prompt_lower for w in ("youtube", "open chrome", "browse", "navigate to", "oru vela")):
-            # Extract target channel/video query
+            # Extract target channel/video query intelligently
             import re
-            target = "oru vela irukumo"
-            search_match = re.search(r"search\s+(?:for\s+)?([a-zA-Z0-9_\s]+?)(?:\s+channel|\s*,\s*|\s+then|\s+subscribe|$)", prompt_lower)
-            if search_match:
-                extracted = search_match.group(1).strip()
-                if extracted and extracted != "youtube":
-                    target = extracted
-            elif "oru vela" in prompt_lower:
-                target = "oru vela irukumo"
+            target = ""
+            
+            # 1. Match 'subscribe to <target>'
+            m1 = re.search(r"subscribe\s+(?:to\s+)?([a-zA-Z0-9_\s]+?)(?:\s+on\s+youtube|\s+youtube|\s+channel|\s+and|\s+then|$)", prompt_lower)
+            if m1 and m1.group(1).strip() not in ("", "the"):
+                target = m1.group(1).strip()
+
+            # 2. Match 'search (for) <target>'
+            if not target:
+                m2 = re.search(r"search\s+(?:for\s+)?([a-zA-Z0-9_\s]+?)(?:\s+on\s+youtube|\s+youtube|\s+channel|\s+and|\s+then|\s+subscribe|$)", prompt_lower)
+                if m2 and m2.group(1).strip() not in ("", "youtube"):
+                    target = m2.group(1).strip()
+
+            # 3. Match 'play/watch/open <target> on youtube'
+            if not target:
+                m3 = re.search(r"(?:play|watch|open)\s+([a-zA-Z0-9_\s]+?)(?:\s+on\s+youtube|\s+youtube|\s+channel|$)", prompt_lower)
+                if m3:
+                    cand = m3.group(1).replace("youtube", "").replace("channel", "").strip()
+                    if cand:
+                        target = cand
+
+            # 4. Fallback: strip noise words
+            if not target:
+                cleaned = re.sub(r"\b(open|youtube|channel|and|subscribe|to|search|for|the|play|on)\b", "", prompt_lower).strip()
+                target = cleaned if cleaned else "oru vela irukumo"
 
             subscribe_flag = "subscribe" in prompt_lower
             live_flag = "live" in prompt_lower
-            emoji = "😊" if any(e in prompt_lower for e in ("emoji", "smile", "comment")) else None
+            emoji = "😊" if any(e in prompt_lower for e in ("emoji", "smile", "comment", "chat")) else None
 
             res = browser_controller.execute_youtube_action(
                 target,

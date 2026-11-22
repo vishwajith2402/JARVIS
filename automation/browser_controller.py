@@ -209,12 +209,21 @@ class BrowserController:
         t = threading.Thread(target=_workflow, daemon=True)
         t.start()
 
+        details = []
+        if subscribe:
+            details.append("subscription processed")
+        if find_live:
+            details.append("live stream detection checked")
+        if comment_or_emoji:
+            details.append(f"posted {comment_or_emoji} into chat")
+
+        actions_str = f" ({', '.join(details)})" if details else ""
+
         return {
             "success": True,
             "target": cleaned_query,
             "message": (
-                f"Chrome has been launched, navigated to YouTube for '{cleaned_query}', "
-                f"processed subscription and live stream detection, and posted the emoji {comment_or_emoji} into chat. "
+                f"Chrome has been launched and navigated to YouTube for '{cleaned_query}'{actions_str}. "
                 "The browser window is active and will remain open, Sir."
             )
         }
