@@ -32,6 +32,30 @@ class JarvisApiBridge:
     def __init__(self):
         self.auto_speak = config.get("voice", "auto_speak_responses", True)
         self.agent_manager = OpenJarvisAgentManager(brain)
+        self._window = None
+        self._is_maximized = False
+
+    def set_window(self, window):
+        self._window = window
+
+    def minimize_window(self) -> None:
+        if self._window:
+            self._window.minimize()
+
+    def maximize_window(self) -> bool:
+        if self._window:
+            if self._is_maximized:
+                self._window.restore()
+                self._is_maximized = False
+            else:
+                self._window.maximize()
+                self._is_maximized = True
+            return self._is_maximized
+        return False
+
+    def close_window(self) -> None:
+        if self._window:
+            self._window.destroy()
 
     def get_telemetry(self) -> Dict[str, Any]:
         return telemetry.get_full_telemetry()
@@ -136,9 +160,13 @@ def run_hud():
         width=1280,
         height=820,
         resizable=True,
+        frameless=True,
+        easy_drag=True,
+        shadow=True,
         min_size=(960, 600),
         background_color="#030712"
     )
+    api.set_window(window)
     webview.start(debug=False)
 
 

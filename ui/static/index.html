@@ -15,7 +15,7 @@
   <div class="app-shell">
     
     <!-- Custom Frameless Title Bar & Controls -->
-    <header class="app-titlebar" data-tauri-drag-region>
+    <header class="app-titlebar pywebview-drag-region">
       <div class="titlebar-left">
         <div class="app-brand">
           <div class="status-orb" id="statusOrb"></div>
@@ -61,6 +61,9 @@
         <div class="window-controls">
           <button class="win-btn minimize" onclick="minimizeWindow()" title="Minimize">
             <svg viewBox="0 0 12 12"><rect width="10" height="1.2" x="1" y="6" fill="currentColor"/></svg>
+          </button>
+          <button class="win-btn maximize" onclick="maximizeWindow()" title="Maximize / Restore">
+            <svg viewBox="0 0 12 12"><rect width="8.5" height="8.5" x="1.75" y="1.75" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
           </button>
           <button class="win-btn close" onclick="closeWindow()" title="Close">
             <svg viewBox="0 0 12 12"><path fill="currentColor" d="M2.22 1.16L6 4.94l3.78-3.78.84.84L6.84 5.78 10.62 9.56l-.84.84L6 6.62l-3.78 3.78-.84-.84L5.16 5.78 1.38 2z"/></svg>

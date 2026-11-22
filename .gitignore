@@ -16,6 +16,7 @@ data/*.db
 data/*.db-journal
 data/*.db-wal
 data/screenshots/*.png
+data/sandbox/
 !data/readme.txt
 !data/screenshots/readme.txt
 

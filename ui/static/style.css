@@ -73,6 +73,12 @@ body.dark-theme {
   background: rgba(9, 10, 15, 0.8);
   backdrop-filter: blur(12px);
   z-index: 100;
+  -webkit-app-region: drag;
+  user-select: none;
+}
+
+.titlebar-left, .titlebar-right, .app-nav, .telemetry-badges, .window-controls, .win-btn, .nav-btn, .chip {
+  -webkit-app-region: no-drag;
 }
 
 .titlebar-left {

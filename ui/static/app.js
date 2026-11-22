@@ -190,11 +190,23 @@ function saveSettings() {
 }
 
 function minimizeWindow() {
-  // Graceful stub for custom titlebar minimize
+  if (window.pywebview && window.pywebview.api && window.pywebview.api.minimize_window) {
+    window.pywebview.api.minimize_window();
+  }
+}
+
+function maximizeWindow() {
+  if (window.pywebview && window.pywebview.api && window.pywebview.api.maximize_window) {
+    window.pywebview.api.maximize_window();
+  }
 }
 
 function closeWindow() {
-  window.close();
+  if (window.pywebview && window.pywebview.api && window.pywebview.api.close_window) {
+    window.pywebview.api.close_window();
+  } else {
+    window.close();
+  }
 }
 
 // --- Telemetry Polling Loop ---
