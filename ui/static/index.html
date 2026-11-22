@@ -594,7 +594,10 @@
                 <div class="spec-row"><span>Capabilities</span><strong>Screen QA & OCR</strong></div>
                 <div class="spec-row"><span>Backend Engine</span><strong>Ollama Vision</strong></div>
               </div>
-              <button class="btn secondary" onclick="quickAction('screen_capture')">Run Vision Scan</button>
+              <div style="display:flex; gap:8px;">
+                <button class="btn secondary" style="flex:1;" onclick="selectModel('moondream:latest')">Select Model</button>
+                <button class="btn primary" style="flex:1;" onclick="quickAction('screen_capture')">Vision Scan</button>
+              </div>
             </div>
           </div>
         </div>
@@ -605,24 +608,84 @@
         <div class="panel-container">
           <div class="panel-header">
             <h2>Local Deep Research Engine</h2>
-            <p>Full-text FTS5 indexing across your personal codebases and files with multi-hop synthesis.</p>
+            <p>Full-text FTS5 indexing across your personal codebases and files with multi-hop reasoning and grounded citations.</p>
           </div>
 
-          <div class="research-grid">
-            <div class="research-action-box">
+          <div class="research-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+            <div class="card">
+              <div class="card-top">
+                <span class="badge active" id="indexStatusBadge">FTS5 Engine Online</span>
+                <span class="param-tag">SQLite Full-Text</span>
+              </div>
               <h3>Knowledge Base Indexing</h3>
-              <p>Index documents and code in <code>D:\Practice Projects</code> for rapid semantic retrieval.</p>
-              <button class="btn primary mt-3" onclick="quickAction('index_knowledge')">
+              <p class="desc">Recursively scans and indexes code, markdown, and documents in your workspaces for sub-millisecond semantic retrieval.</p>
+              <div class="spec-list">
+                <div class="spec-row"><span>Indexed Files</span><strong id="indexedFilesCountVal">37 files</strong></div>
+                <div class="spec-row"><span>Search Mode</span><strong>BM25 Full-Text Search</strong></div>
+                <div class="spec-row"><span>Storage</span><strong>data/deep_research.db</strong></div>
+              </div>
+              <button class="btn primary" id="btnIndexKnowledge" onclick="triggerIndexKnowledge()">
                 <svg class="icon-sm" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 <span>Index Local Workspaces</span>
               </button>
             </div>
 
-            <div class="research-results-box">
-              <div class="box-header">Recent Index Status</div>
-              <div class="result-content" id="indexStatusText">
-                Indexed repositories: <strong>TITAN Workspace</strong> (37 code & markdown files registered).
+            <div class="card">
+              <div class="card-top">
+                <span class="badge active">MULTI-HOP</span>
+                <span class="param-tag">Local LLM Grounding</span>
               </div>
+              <h3>Recent Indexed Sources</h3>
+              <p class="desc">Top indexed repositories and active context files available for autonomous research synthesis.</p>
+              <div class="spec-list" id="recentIndexedList" style="max-height: 140px; overflow-y: auto;">
+                <div class="spec-row"><span>core/react_agent.py</span><strong>Python</strong></div>
+                <div class="spec-row"><span>core/brain.py</span><strong>Python</strong></div>
+                <div class="spec-row"><span>automation/deep_research.py</span><strong>Python</strong></div>
+                <div class="spec-row"><span>automation/coding_agent.py</span><strong>Python</strong></div>
+              </div>
+              <button class="btn secondary" onclick="loadDeepResearchStatus()">
+                <span>Refresh Index Telemetry</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Interactive Deep Research Query Studio -->
+          <div class="card" style="margin-top: 20px;">
+            <div class="card-top">
+              <span class="badge active" style="background:rgba(56,189,248,0.2); color:#38bdf8;">RESEARCH STUDIO</span>
+              <span class="param-tag">Iterative Synthesis</span>
+            </div>
+            <h3>Conduct Deep Research Query</h3>
+            <p class="desc">Ask complex architectural, algorithmic, or project questions. TITAN will query local files, extract citations, and generate an authoritative synthesis.</p>
+            
+            <div style="display:flex; gap:10px; margin-bottom: 14px;">
+              <input type="text" id="researchQueryInput" placeholder="Enter research query (e.g. How does TITAN implement multi-hop tool execution and local safety?)" style="flex:1; background:rgba(0,0,0,0.3); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:10px 14px; color:#fff; font-size:13px;" onkeydown="if(event.key==='Enter') executeDeepResearchStudio()">
+              <button class="btn primary" id="btnExecuteResearch" onclick="executeDeepResearchStudio()">
+                <svg class="icon-sm" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                <span>Run Deep Research</span>
+              </button>
+            </div>
+
+            <!-- Suggestion Chips -->
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
+              <span style="font-size:12px; color:var(--text-muted); align-self:center;">Quick Topics:</span>
+              <button class="btn secondary" style="padding:4px 10px; font-size:11px;" onclick="setResearchQuery('Explain TITAN ReAct multi-hop loop and tool parsing')">ReAct Loop</button>
+              <button class="btn secondary" style="padding:4px 10px; font-size:11px;" onclick="setResearchQuery('How does TITAN perform zero-cloud autonomous code generation and sandbox execution?')">Code Generation</button>
+              <button class="btn secondary" style="padding:4px 10px; font-size:11px;" onclick="setResearchQuery('Summarize local hardware telemetry and NVIDIA RTX 3050 VRAM management')">Hardware & VRAM</button>
+              <button class="btn secondary" style="padding:4px 10px; font-size:11px;" onclick="setResearchQuery('How does TITAN autonomous C-Suite handle CRM leads, OKRs, and invoicing?')">C-Suite Business</button>
+            </div>
+
+            <!-- Deep Research Report View Area -->
+            <div id="researchReportContainer" class="hidden" style="background:rgba(0,0,0,0.4); border:1px solid rgba(56,189,248,0.25); border-radius:var(--radius-md); padding:20px; margin-top:10px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:10px;">
+                <div>
+                  <h4 id="researchTopicHeading" style="font-size:15px; color:#38bdf8; margin:0;">Research Synthesis</h4>
+                  <span id="researchSourcesCount" style="font-size:12px; color:var(--text-muted);">0 Sources Referenced</span>
+                </div>
+                <button class="btn secondary" style="padding:4px 10px; font-size:11px;" onclick="copyResearchReport()">Copy Report</button>
+              </div>
+              <div id="researchReportBody" style="font-size:13px; line-height:1.7; color:#e2e8f0; white-space:pre-wrap;"></div>
+              <div id="researchSourcesList" style="margin-top:16px; padding-top:12px; border-top:1px dashed rgba(255,255,255,0.1); font-size:11px; color:#94a3b8;"></div>
             </div>
           </div>
         </div>

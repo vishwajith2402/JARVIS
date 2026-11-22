@@ -218,13 +218,27 @@ class OpenJarvisAgentManager:
 
         # 4. Code Interpreter Agent (OpenHands style)
         elif mode in ("code_interpreter", "native_openhands"):
-            # Check if prompt contains code to execute directly
             from automation.code_interpreter import code_interpreter
-            code_match = re.search(r"```python(.*?)```", user_prompt, re.DOTALL)
+
+            # Check for markdown code blocks or direct code execution
+            code_match = re.search(r"```(?:python)?(.*?)```", user_prompt, re.DOTALL)
+            direct_code = None
             if code_match:
-                code = code_match.group(1).strip()
-                res = code_interpreter.execute_python(code)
-                return f"Execution Result:\nStdout: {res.get('stdout')}\nStderr: {res.get('stderr')}\nTime: {res.get('execution_time_sec')}s"
+                direct_code = code_match.group(1).strip()
+            elif user_prompt.strip().startswith(("run:", "exec:", "python:", "eval:")):
+                direct_code = re.sub(r"^(run|exec|python|eval):\s*", "", user_prompt.strip(), flags=re.IGNORECASE)
+            elif any(user_prompt.strip().startswith(kw) for kw in ("import ", "from ", "def ", "class ", "print(", "for ", "while ")) and len(user_prompt.strip().splitlines()) >= 1:
+                # If it looks like raw python code without english request keywords
+                if not any(req_word in user_prompt.lower() for req_word in ("create ", "build ", "make ", "generate ", "write me ", "how to ")):
+                    direct_code = user_prompt.strip()
+
+            if direct_code:
+                res = code_interpreter.execute_python(direct_code)
+                stdout = res.get('stdout', '') or '(no stdout output)'
+                stderr = res.get('stderr', '')
+                exec_time = res.get('execution_time_sec', 0.0)
+                err_part = f"\n**Stderr:**\n```\n{stderr}\n```" if stderr else ""
+                return f"⚡ **Python Sandbox Execution:**\n```\n{stdout}\n```{err_part}\n\n*Execution completed in {exec_time}s (Return Code: {res.get('return_code', 0)}).*"
 
             # Use dedicated OpenHands Coding Agent for generating complete software & scripts
             from automation.coding_agent import CodingAgent

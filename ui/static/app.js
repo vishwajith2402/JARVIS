@@ -162,6 +162,8 @@ function switchView(tabId) {
     loadExecutiveProfile();
   } else if (tabId === "tab-business") {
     loadBusinessDashboard();
+  } else if (tabId === "tab-research") {
+    loadDeepResearchStatus();
   }
 }
 
@@ -174,15 +176,63 @@ function selectAgentMode(mode) {
   if (window.pywebview && window.pywebview.api && window.pywebview.api.set_agent_mode) {
     window.pywebview.api.set_agent_mode(mode);
   }
-  const modeNames = {
-    orchestrator: "⚡ Orchestrator (Auto Tool Execution)",
-    native_react: "🧠 Native ReAct (Thought-Action-Observation)",
-    code_interpreter: "💻 Code Assistant (Python Sandbox)",
-    deep_research: "🔍 Deep Research (Knowledge Base)",
-    morning_digest: "📋 Daily Operative (Briefing & Health)",
-    simple: "💬 Simple (Fast Chat)"
-  };
-  appendMessage("System", `TITAN agent mode switched to: ${modeNames[mode] || mode}`, "assistant");
+
+  const input = document.getElementById("userInput");
+  if (mode === "code_interpreter") {
+    if (input) {
+      input.placeholder = "💻 Code Assistant Active: Enter Python code or ask to build desktop/web app...";
+      input.focus();
+    }
+    appendMessage("System", `
+      <strong>💻 Code Assistant Mode Activated</strong><br/>
+      Direct Python execution and autonomous software development are online.<br/>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+        <button class="pill-btn" onclick="populateCodePrompt('print([x**2 for x in range(10)])')">⚡ Run Python</button>
+        <button class="pill-btn" onclick="populateCodePrompt('Build a complete Tkinter Pomodoro timer app')">🎮 Tkinter App</button>
+        <button class="pill-btn" onclick="promptLovableApp()">🌐 Lovable Web App</button>
+      </div>
+    `, "assistant");
+  } else if (mode === "deep_research") {
+    if (input) {
+      input.placeholder = "🔍 Deep Research Active: Enter query for multi-hop codebase analysis...";
+      input.focus();
+    }
+    appendMessage("System", `
+      <strong>🔍 Deep Research Mode Activated</strong><br/>
+      Multi-hop SQLite FTS5 search across local codebases and documents.<br/>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+        <button class="pill-btn" onclick="switchView('tab-research')">📖 Open Research Studio</button>
+        <button class="pill-btn" onclick="populateCodePrompt('Analyze TITAN architecture and explain how voice barge-in works')">🔬 Research Architecture</button>
+        <button class="pill-btn" onclick="quickAction('index_knowledge')">📂 Index Workspaces</button>
+      </div>
+    `, "assistant");
+  } else if (mode === "morning_digest") {
+    appendMessage("System", "📋 Daily Operative activated. Generating comprehensive morning briefing...", "assistant");
+    quickAction("morning_digest");
+  } else if (mode === "simple") {
+    if (input) {
+      input.placeholder = "💬 Simple Chat Active: Fast direct responses...";
+      input.focus();
+    }
+    appendMessage("System", "💬 Simple chat mode activated. Instant conversational responses with zero tool overhead.", "assistant");
+  } else {
+    if (input) {
+      input.placeholder = "Ask TITAN, run automation, or navigate YouTube...";
+    }
+    const modeNames = {
+      orchestrator: "⚡ Orchestrator (Auto Tool Execution)",
+      native_react: "🧠 Native ReAct (Thought-Action-Observation)"
+    };
+    appendMessage("System", `TITAN agent mode switched to: ${modeNames[mode] || mode}`, "assistant");
+  }
+}
+
+function populateCodePrompt(text) {
+  const input = document.getElementById("userInput");
+  if (input) {
+    input.value = text;
+    input.focus();
+  }
 }
 
 // --- Chat & Message Handling ---
@@ -406,13 +456,19 @@ async function quickAction(actionType) {
 function selectModel(modelName) {
   activeModel = modelName;
   const label = modelName.includes("hermes") ? "Hermes 3" : (modelName.includes("moondream") ? "Moondream" : "Llama 3.2");
-  document.getElementById("activeModelVal").textContent = label;
+  const modelChip = document.getElementById("activeModelVal");
+  if (modelChip) modelChip.textContent = label;
 
   document.querySelectorAll(".card").forEach(c => c.classList.remove("active"));
   if (modelName.includes("llama")) {
-    document.getElementById("card-llama").classList.add("active");
+    const card = document.getElementById("card-llama");
+    if (card) card.classList.add("active");
   } else if (modelName.includes("hermes")) {
-    document.getElementById("card-hermes").classList.add("active");
+    const card = document.getElementById("card-hermes");
+    if (card) card.classList.add("active");
+  } else if (modelName.includes("moondream")) {
+    const card = document.getElementById("card-moondream");
+    if (card) card.classList.add("active");
   }
 
   if (window.pywebview && window.pywebview.api && window.pywebview.api.switch_model) {
@@ -1030,4 +1086,106 @@ async function promptPerplexitySearch() {
       appendMessage("TITAN", res.answer_with_citations, "assistant");
     }
   }
+}
+
+// ==========================================================================
+// DEEP RESEARCH STUDIO CONTROLLER
+// ==========================================================================
+async function loadDeepResearchStatus() {
+  if (!window.pywebview || !window.pywebview.api) return;
+  try {
+    if (window.pywebview.api.get_deep_research_status) {
+      const status = await window.pywebview.api.get_deep_research_status();
+      if (status && status.success) {
+        const countEl = document.getElementById("indexedFilesCountVal");
+        if (countEl) countEl.textContent = `${status.indexed_count || 0} files`;
+
+        const listEl = document.getElementById("recentIndexedList");
+        if (listEl && status.recent_files && status.recent_files.length > 0) {
+          listEl.innerHTML = status.recent_files.map(f => `
+            <div class="spec-row">
+              <span title="${f.file_path}">${f.file_name}</span>
+              <strong>Indexed</strong>
+            </div>
+          `).join("");
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Error loading deep research status:", err);
+  }
+}
+
+async function triggerIndexKnowledge() {
+  const btn = document.getElementById("btnIndexKnowledge");
+  if (btn) btn.disabled = true;
+  setOrbStatus("Indexing local workspaces into FTS5...", true);
+
+  try {
+    if (window.pywebview && window.pywebview.api) {
+      const res = await window.pywebview.api.trigger_quick_action("index_knowledge");
+      appendMessage("TITAN", res, "assistant");
+      await loadDeepResearchStatus();
+    }
+  } catch (err) {
+    appendMessage("TITAN", "Indexing error: " + err, "assistant");
+  } finally {
+    if (btn) btn.disabled = false;
+    setOrbStatus("TITAN is ready. Type or speak your command.", false);
+  }
+}
+
+function setResearchQuery(q) {
+  const input = document.getElementById("researchQueryInput");
+  if (input) {
+    input.value = q;
+    input.focus();
+  }
+}
+
+async function executeDeepResearchStudio() {
+  const input = document.getElementById("researchQueryInput");
+  const query = input ? input.value.trim() : "";
+  if (!query) return;
+
+  const btn = document.getElementById("btnExecuteResearch");
+  if (btn) btn.disabled = true;
+
+  const reportContainer = document.getElementById("researchReportContainer");
+  const heading = document.getElementById("researchTopicHeading");
+  const countEl = document.getElementById("researchSourcesCount");
+  const bodyEl = document.getElementById("researchReportBody");
+  const sourcesEl = document.getElementById("researchSourcesList");
+
+  if (reportContainer) reportContainer.classList.remove("hidden");
+  if (heading) heading.textContent = `Researching: "${query}"...`;
+  if (bodyEl) bodyEl.innerHTML = `<span style="color:#38bdf8;">Running multi-hop semantic scan across indexed files and synthesizing grounded report...</span>`;
+  setOrbStatus("Synthesizing multi-hop deep research...", true);
+
+  try {
+    if (window.pywebview && window.pywebview.api && window.pywebview.api.run_deep_research) {
+      const res = await window.pywebview.api.run_deep_research(query);
+      if (heading) heading.textContent = `Synthesis: ${res.topic || query}`;
+      if (countEl) countEl.textContent = `${res.sources_found || 0} Knowledge Sources Consulted`;
+      if (bodyEl) bodyEl.innerHTML = formatAssistantContent(res.synthesis || res.report || "No synthesis produced.");
+      if (sourcesEl && res.sources) {
+        sourcesEl.innerHTML = `<strong>Consulted Sources:</strong><br/>` + res.sources.map(s => `• <code>${s}</code>`).join("<br/>");
+      }
+    } else {
+      if (bodyEl) bodyEl.textContent = "Simulation: Deep research synthesis for '" + query + "' completed.";
+    }
+  } catch (err) {
+    if (bodyEl) bodyEl.textContent = "Deep research execution error: " + err;
+  } finally {
+    if (btn) btn.disabled = false;
+    setOrbStatus("TITAN is ready. Type or speak your command.", false);
+  }
+}
+
+function copyResearchReport() {
+  const bodyEl = document.getElementById("researchReportBody");
+  if (!bodyEl) return;
+  navigator.clipboard.writeText(bodyEl.innerText).then(() => {
+    alert("Research report copied to clipboard!");
+  });
 }

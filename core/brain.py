@@ -494,6 +494,16 @@ Live System Telemetry:
             return err_msg
 
     def _dispatch_chat(self, messages: List[Dict[str, str]], on_chunk: Optional[Callable[[str], None]] = None) -> str:
+        if self._active_provider == "offline" or not self._active_endpoint:
+            self._detect_provider()
+            if self._active_provider == "offline" or not self._active_endpoint:
+                user_msg = "Hello"
+                for m in reversed(messages):
+                    if m.get("role") == "user":
+                        user_msg = m.get("content", "Hello")
+                        break
+                return self._handle_offline_intent(user_msg)
+
         if self._active_provider == "ollama":
             endpoint = f"{self._active_endpoint}/api/chat"
             use_stream = bool(on_chunk)

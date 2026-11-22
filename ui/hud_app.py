@@ -242,6 +242,31 @@ class JarvisApiBridge:
         from automation.omniscience_engine import omniscience_engine
         return omniscience_engine.perplexity_search(query)
 
+    def run_deep_research(self, query: str) -> Dict[str, Any]:
+        """Perform multi-hop local deep research and return synthesis & sources."""
+        res = deep_research.deep_research_query(query)
+        if self.auto_speak:
+            report_text = res.get("synthesis", "")
+            first_sentence = report_text.split(".")[0] if "." in report_text else report_text[:120]
+            speaker.speak(f"Deep research completed. {first_sentence}.")
+        return res
+
+    def get_deep_research_status(self) -> Dict[str, Any]:
+        """Return counts of indexed documents and database status."""
+        try:
+            import sqlite3
+            if deep_research.db_path.exists():
+                with sqlite3.connect(deep_research.db_path) as conn:
+                    cur = conn.cursor()
+                    cur.execute("SELECT count(*) FROM documents")
+                    doc_count = cur.fetchone()[0]
+                    cur.execute("SELECT file_name, file_path FROM documents ORDER BY indexed_at DESC LIMIT 5")
+                    recent = [{"file_name": r[0], "file_path": r[1]} for r in cur.fetchall()]
+                    return {"success": True, "indexed_count": doc_count, "recent_files": recent}
+            return {"success": True, "indexed_count": 0, "recent_files": []}
+        except Exception as e:
+            return {"success": False, "error": str(e), "indexed_count": 0, "recent_files": []}
+
 
 def run_hud():
     """Launch the HUD desktop window."""

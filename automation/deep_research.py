@@ -92,6 +92,33 @@ class DeepResearchAgent:
             "message": f"Successfully indexed {indexed_count} local files into TITAN Deep Research engine."
         }
 
+    def index_file(self, file_path: str) -> Dict[str, Any]:
+        """Index a single document or code file into Deep Research FTS5 index."""
+        p = Path(file_path)
+        if not p.is_file():
+            return {"success": False, "error": f"File '{file_path}' does not exist or is not a file."}
+
+        ext = p.suffix.lower()
+        try:
+            with open(p, "r", encoding="utf-8", errors="replace") as f:
+                text = f.read()
+
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute("""
+                    INSERT INTO documents (file_path, file_name, content, extension)
+                    VALUES (?, ?, ?, ?)
+                    ON CONFLICT(file_path) DO UPDATE SET
+                        content=excluded.content,
+                        indexed_at=CURRENT_TIMESTAMP;
+                """, (str(p), p.name, text, ext))
+                cursor.execute("INSERT INTO docs_fts(docs_fts) VALUES('rebuild');")
+                conn.commit()
+
+            return {"success": True, "file_path": str(p), "file_name": p.name}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
     def search_local_docs(self, query: str, limit: int = 4) -> List[Dict[str, Any]]:
         """Perform full-text search across indexed codebase and documents."""
         results = []
@@ -169,8 +196,20 @@ Include specific file references or citations where relevant."""
             "topic": topic,
             "sources_found": len(initial_matches),
             "sources": [m["file_path"] for m in initial_matches],
-            "report": answer
+            "report": answer,
+            "synthesis": answer
         }
+
+    def search(self, query: str, limit: int = 4) -> List[Dict[str, Any]]:
+        """Convenience alias for search_local_docs."""
+        return self.search_local_docs(query, limit=limit)
+
+    def deep_research_query(self, query: str) -> Dict[str, Any]:
+        """Synthesize multi-hop research for an incoming query or topic."""
+        res = self.multi_hop_research(query)
+        if "synthesis" not in res:
+            res["synthesis"] = res.get("report", "")
+        return res
 
 
 deep_research = DeepResearchAgent()
