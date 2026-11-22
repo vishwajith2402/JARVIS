@@ -41,8 +41,12 @@ class PermissionManager:
             "analyze_document": PermissionLevel.LEVEL_1_AUTO,
             "morning_briefing": PermissionLevel.LEVEL_1_AUTO,
             "debug_screen": PermissionLevel.LEVEL_1_AUTO,
+            "manage_tasks": PermissionLevel.LEVEL_1_AUTO,
+            "extract_web_data": PermissionLevel.LEVEL_1_AUTO,
 
             # Level 2
+            "create_new_skill": PermissionLevel.LEVEL_2_CONFIRM,
+            "web_download": PermissionLevel.LEVEL_2_CONFIRM,
             "execute_routine": PermissionLevel.LEVEL_2_CONFIRM,
             "open_application": PermissionLevel.LEVEL_2_CONFIRM,
             "close_application": PermissionLevel.LEVEL_2_CONFIRM,

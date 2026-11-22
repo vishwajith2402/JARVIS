@@ -251,7 +251,34 @@ class UniversalAgentBrain:
                 from vision.screen_sense import screen_sense
                 return screen_sense.debug_screen(args.get("hint"))
 
+            elif tool_name == "create_new_skill":
+                from automation.skill_creator import skill_creator
+                return skill_creator.create_skill(args.get("skill_name", ""), args.get("requirement", ""))
+
+            elif tool_name == "manage_tasks":
+                from core.task_board import task_board
+                act = args.get("action", "list").lower()
+                if act == "add":
+                    return task_board.add_task(args.get("title", "Task"), args.get("description", ""), args.get("priority", "normal"))
+                elif act in ("update", "complete", "done"):
+                    return task_board.update_status(int(args.get("task_id", 1)), args.get("status", "done"))
+                elif act == "delete":
+                    return task_board.delete_task(int(args.get("task_id", 1)))
+                else:
+                    return {"success": True, "tasks": task_board.list_tasks(args.get("status")), "summary": task_board.get_summary()}
+
+            elif tool_name == "web_download":
+                from automation.web_agent import web_agent
+                return web_agent.download_file(args.get("url", ""), args.get("filename"))
+
+            elif tool_name == "extract_web_data":
+                from automation.web_agent import web_agent
+                return web_agent.scrape_web_tables_and_links(args.get("url", ""))
+
             else:
+                from automation.skill_creator import skill_creator
+                if tool_name in skill_creator.loaded_skills:
+                    return skill_creator.execute_custom_skill(tool_name, args)
                 return {"error": f"Unknown tool: '{tool_name}'"}
         except Exception as e:
             return {"error": f"Tool execution failed: {e}"}
