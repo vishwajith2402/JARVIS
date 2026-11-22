@@ -1744,14 +1744,15 @@ body.dark-theme {
 .hero-cyber-stage {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 16px 48px;
+  align-items: stretch;
+  padding: 8px 36px 0;
   flex: 1;
   position: relative;
-  max-width: 1400px;
+  max-width: 1560px;
   margin: 0 auto;
   width: 100%;
   z-index: 5;
+  overflow: visible;
 }
 
 /* Left Column */
@@ -1971,26 +1972,30 @@ body.dark-theme {
 
 /* Right Column */
 .hero-right-column {
-  flex: 1;
+  flex: 1.4;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  justify-content: space-between;
+  justify-content: flex-end;
   height: 100%;
   position: relative;
   pointer-events: none;
+  overflow: visible;
 }
 
 .hero-quote-card {
+  position: absolute;
+  top: 8px;
+  right: 16px;
   display: flex;
   gap: 10px;
   max-width: 320px;
   padding: 10px 16px;
-  background: rgba(8, 14, 28, 0.65);
-  border: 1px solid rgba(56, 189, 248, 0.25);
+  background: rgba(8, 14, 28, 0.75);
+  border: 1px solid rgba(56, 189, 248, 0.28);
   border-radius: 8px;
   backdrop-filter: blur(10px);
-  margin-bottom: 20px;
+  z-index: 15;
   pointer-events: auto;
 }
 
@@ -2023,58 +2028,66 @@ body.dark-theme {
   letter-spacing: 0.12em;
 }
 
-/* Live Animated Hologram & Robot Character */
+/* Grand Robot & Hologram Presentation */
 .hero-mech-container {
   position: relative;
   width: 100%;
-  max-width: 480px;
-  height: 440px;
+  height: calc(100vh - 155px);
+  max-height: 740px;
+  min-height: 520px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-end;
+  justify-content: flex-end;
   pointer-events: auto;
+  margin-bottom: -4px;
+}
+
+.hero-robot-wrap {
+  position: relative;
+  height: 100%;
+  max-height: 740px;
+  display: inline-flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: robotBreathing 4.5s ease-in-out infinite alternate;
 }
 
 .hero-robot-figure {
-  width: 100%;
   height: 100%;
+  width: auto;
+  max-height: 740px;
   object-fit: contain;
-  object-position: center bottom;
-  filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.45)) drop-shadow(0 0 50px rgba(99, 102, 241, 0.25));
-  animation: robotBreathing 4.5s ease-in-out infinite alternate;
+  object-position: right bottom;
+  display: block;
+  filter: drop-shadow(0 0 35px rgba(56, 189, 248, 0.5)) drop-shadow(0 0 80px rgba(99, 102, 241, 0.3));
   pointer-events: auto;
   user-select: none;
   -webkit-user-drag: none;
-  transition: transform 0.3s ease, filter 0.3s ease;
+  transition: filter 0.3s ease;
 }
 
 .hero-robot-figure:hover {
-  filter: drop-shadow(0 0 35px rgba(56, 189, 248, 0.7)) drop-shadow(0 0 70px rgba(99, 102, 241, 0.4));
+  filter: drop-shadow(0 0 45px rgba(56, 189, 248, 0.8)) drop-shadow(0 0 100px rgba(99, 102, 241, 0.5));
 }
 
 @keyframes robotBreathing {
-  0% { transform: translateY(0) scale(1); }
-  100% { transform: translateY(-8px) scale(1.015); }
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-10px); }
 }
 
 .hero-hologram-overlay {
   position: absolute;
   left: 25.4%;
-  top: 54.7%;
+  top: 52.7%;
   transform: translate(-50%, -50%);
-  width: 130px;
-  height: 130px;
+  width: 145px;
+  height: 145px;
   display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: auto;
   cursor: pointer;
-  animation: hologramFloat 4.5s ease-in-out infinite alternate;
-}
-
-@keyframes hologramFloat {
-  0% { transform: translate(-50%, -50%) translateY(0); }
-  100% { transform: translate(-50%, -50%) translateY(-8px); }
+  z-index: 10;
 }
 
 .holo-ring {
@@ -2902,14 +2915,15 @@ body.dark-theme {
 .hero-cyber-stage {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 16px 48px;
+  align-items: stretch;
+  padding: 8px 36px 0;
   flex: 1;
   position: relative;
-  max-width: 1400px;
+  max-width: 1560px;
   margin: 0 auto;
   width: 100%;
   z-index: 5;
+  overflow: visible;
 }
 
 /* Left Column */
@@ -3129,26 +3143,30 @@ body.dark-theme {
 
 /* Right Column */
 .hero-right-column {
-  flex: 1;
+  flex: 1.4;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  justify-content: space-between;
+  justify-content: flex-end;
   height: 100%;
   position: relative;
   pointer-events: none;
+  overflow: visible;
 }
 
 .hero-quote-card {
+  position: absolute;
+  top: 8px;
+  right: 16px;
   display: flex;
   gap: 10px;
   max-width: 320px;
   padding: 10px 16px;
-  background: rgba(8, 14, 28, 0.65);
-  border: 1px solid rgba(56, 189, 248, 0.25);
+  background: rgba(8, 14, 28, 0.75);
+  border: 1px solid rgba(56, 189, 248, 0.28);
   border-radius: 8px;
   backdrop-filter: blur(10px);
-  margin-bottom: 20px;
+  z-index: 15;
   pointer-events: auto;
 }
 
@@ -3181,58 +3199,66 @@ body.dark-theme {
   letter-spacing: 0.12em;
 }
 
-/* Live Animated Hologram & Robot Character */
+/* Grand Robot & Hologram Presentation */
 .hero-mech-container {
   position: relative;
   width: 100%;
-  max-width: 480px;
-  height: 440px;
+  height: calc(100vh - 155px);
+  max-height: 740px;
+  min-height: 520px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-end;
+  justify-content: flex-end;
   pointer-events: auto;
+  margin-bottom: -4px;
+}
+
+.hero-robot-wrap {
+  position: relative;
+  height: 100%;
+  max-height: 740px;
+  display: inline-flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: robotBreathing 4.5s ease-in-out infinite alternate;
 }
 
 .hero-robot-figure {
-  width: 100%;
   height: 100%;
+  width: auto;
+  max-height: 740px;
   object-fit: contain;
-  object-position: center bottom;
-  filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.45)) drop-shadow(0 0 50px rgba(99, 102, 241, 0.25));
-  animation: robotBreathing 4.5s ease-in-out infinite alternate;
+  object-position: right bottom;
+  display: block;
+  filter: drop-shadow(0 0 35px rgba(56, 189, 248, 0.5)) drop-shadow(0 0 80px rgba(99, 102, 241, 0.3));
   pointer-events: auto;
   user-select: none;
   -webkit-user-drag: none;
-  transition: transform 0.3s ease, filter 0.3s ease;
+  transition: filter 0.3s ease;
 }
 
 .hero-robot-figure:hover {
-  filter: drop-shadow(0 0 35px rgba(56, 189, 248, 0.7)) drop-shadow(0 0 70px rgba(99, 102, 241, 0.4));
+  filter: drop-shadow(0 0 45px rgba(56, 189, 248, 0.8)) drop-shadow(0 0 100px rgba(99, 102, 241, 0.5));
 }
 
 @keyframes robotBreathing {
-  0% { transform: translateY(0) scale(1); }
-  100% { transform: translateY(-8px) scale(1.015); }
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-10px); }
 }
 
 .hero-hologram-overlay {
   position: absolute;
   left: 25.4%;
-  top: 54.7%;
+  top: 52.7%;
   transform: translate(-50%, -50%);
-  width: 130px;
-  height: 130px;
+  width: 145px;
+  height: 145px;
   display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: auto;
   cursor: pointer;
-  animation: hologramFloat 4.5s ease-in-out infinite alternate;
-}
-
-@keyframes hologramFloat {
-  0% { transform: translate(-50%, -50%) translateY(0); }
-  100% { transform: translate(-50%, -50%) translateY(-8px); }
+  z-index: 10;
 }
 
 .holo-ring {
