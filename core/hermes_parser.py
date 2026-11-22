@@ -226,6 +226,20 @@ class HermesToolParser:
         {
             "type": "function",
             "function": {
+                "name": "generate_code",
+                "description": "Generate complete, functional, immediately executable Python or Web software (apps, GUI, Tkinter, games, tools, calculators) and save to sandbox.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "requirement": {"type": "string", "description": "The exact requirements or software to generate."}
+                    },
+                    "required": ["requirement"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
                 "name": "write_file",
                 "description": "Write or create files with text or code on the filesystem.",
                 "parameters": {
@@ -375,6 +389,34 @@ class HermesToolParser:
                     "arguments": call_data.get("arguments") or call_data.get("args") or {}
                 }
 
+        # 2. XML tag element format: <tool_name key="val" ... /> or <tool_name key="val">...</tool_name>
+        xml_match = re.search(r'<([a-zA-Z0-9_]+)\s+([^>]+?)\s*(?:/>|>)', text)
+        if xml_match:
+            tag = xml_match.group(1).lower()
+            if tag not in ("tools", "tool_call", "tool_response", "system", "user", "assistant", "think"):
+                attr_str = xml_match.group(2)
+                attrs = {}
+                for k, v in re.findall(r'([a-zA-Z0-9_]+)=["\']([^"\']*)["\']', attr_str):
+                    attrs[k] = v
+                if attrs:
+                    return {"name": tag, "arguments": attrs}
+
+        # 3. Action: tool_name(...) format
+        action_match = re.search(r'Action:\s*([a-zA-Z0-9_]+)\s*\((.*?)\)', text, re.DOTALL)
+        if action_match:
+            name = action_match.group(1).strip()
+            arg_str = action_match.group(2).strip()
+            if not arg_str:
+                return {"name": name, "arguments": {}}
+            try:
+                return {"name": name, "arguments": json.loads(arg_str)}
+            except Exception:
+                attrs = {}
+                for k, v in re.findall(r'([a-zA-Z0-9_]+)\s*=\s*["\']([^"\']*)["\']', arg_str):
+                    attrs[k] = v
+                if attrs:
+                    return {"name": name, "arguments": attrs}
+
         # 2. Markdown JSON block: ```json {"tool": "...", "args": {...}} ```
         json_match = re.search(r'```(?:json)?\s*(\{[\s\S]*?\})\s*```', text)
         if json_match:
@@ -410,6 +452,23 @@ class HermesToolParser:
                     "name": call_data.get("name") or call_data.get("tool"),
                     "arguments": call_data.get("arguments") or call_data.get("args") or {}
                 }
+
+        # 6. Plain text invocation: tool_name { ... } or tool_name({...})
+        plain_match = re.search(r'\b([a-zA-Z0-9_]{3,30})\s*(?:(?:\(|\s*)\s*(\{[\s\S]*?\})\s*\)?)', text)
+        if plain_match:
+            cand_name = plain_match.group(1).strip()
+            raw_json = plain_match.group(2)
+            try:
+                call_args = json.loads(raw_json)
+                if isinstance(call_args, dict):
+                    return {"name": cand_name, "arguments": call_args}
+            except Exception:
+                try:
+                    call_args = json.loads(cls._clean_json_str(raw_json))
+                    if isinstance(call_args, dict):
+                        return {"name": cand_name, "arguments": call_args}
+                except Exception:
+                    pass
 
         return None
 

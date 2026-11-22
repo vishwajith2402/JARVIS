@@ -170,12 +170,17 @@ class UniversalAgentBrain:
                 act = args.get("action", "youtube_search")
                 tgt = args.get("target", "")
                 extra = args.get("extra", None)
-                if act == "youtube_search" or "youtube" in tgt.lower() or "oru vela" in tgt.lower() or "channel" in tgt.lower():
+                # Normalize target if model passed full URL
+                if "youtube.com/" in tgt:
+                    tgt = tgt.rstrip("/").split("/")[-1].replace("@", "").replace("user/", "")
+                if act in ("youtube_search", "subscribe", "youtube") or "youtube" in tgt.lower() or "channel" in tgt.lower() or "oru vela" in tgt.lower() or "subscribe" in str(extra).lower():
+                    should_sub = args.get("subscribe", True) or "subscribe" in str(extra).lower()
+                    emoji = extra if extra and any(e in extra for e in ("😊", "smile", "emoji")) else None
                     return browser_controller.execute_youtube_action(
                         tgt,
-                        subscribe=args.get("subscribe", True),
+                        subscribe=should_sub,
                         find_live=args.get("find_live", True),
-                        comment_or_emoji=extra or "😊"
+                        comment_or_emoji=emoji
                     )
                 elif act == "open_url":
                     return browser_controller.open_url(tgt)
@@ -275,6 +280,12 @@ class UniversalAgentBrain:
                 from automation.web_agent import web_agent
                 return web_agent.scrape_web_tables_and_links(args.get("url", ""))
 
+            elif tool_name == "generate_code":
+                from automation.coding_agent import CodingAgent
+                coder = CodingAgent(self)
+                req = args.get("requirement") or args.get("prompt") or args.get("description", "")
+                return {"success": True, "message": coder.generate_and_deliver_code(req, session_id="main")}
+
             else:
                 from automation.skill_creator import skill_creator
                 if tool_name in skill_creator.loaded_skills:
@@ -322,101 +333,6 @@ Live System Telemetry:
             if on_chunk:
                 on_chunk(reply)
             return reply
-        if any(w in prompt_lower for w in ("youtube", "open chrome", "browse", "navigate to", "oru vela")):
-            # Extract target channel/video query intelligently
-            import re
-            target = ""
-            
-            # 1. Match 'subscribe to <target>'
-            m1 = re.search(r"subscribe\s+(?:to\s+)?([a-zA-Z0-9_\s]+?)(?:\s+on\s+youtube|\s+youtube|\s+channel|\s+and|\s+then|$)", prompt_lower)
-            if m1 and m1.group(1).strip() not in ("", "the"):
-                target = m1.group(1).strip()
-
-            # 2. Match 'search (for) <target>'
-            if not target:
-                m2 = re.search(r"search\s+(?:for\s+)?([a-zA-Z0-9_\s]+?)(?:\s+on\s+youtube|\s+youtube|\s+channel|\s+and|\s+then|\s+subscribe|$)", prompt_lower)
-                if m2 and m2.group(1).strip() not in ("", "youtube"):
-                    target = m2.group(1).strip()
-
-            # 3. Match 'play/watch/open <target> on youtube'
-            if not target:
-                m3 = re.search(r"(?:play|watch|open)\s+([a-zA-Z0-9_\s]+?)(?:\s+on\s+youtube|\s+youtube|\s+channel|$)", prompt_lower)
-                if m3:
-                    cand = m3.group(1).replace("youtube", "").replace("channel", "").strip()
-                    if cand:
-                        target = cand
-
-            # 4. Fallback: strip noise words
-            if not target:
-                cleaned = re.sub(r"\b(open|youtube|channel|and|subscribe|to|search|for|the|play|on)\b", "", prompt_lower).strip()
-                target = cleaned if cleaned else "oru vela irukumo"
-
-            subscribe_flag = "subscribe" in prompt_lower
-            live_flag = "live" in prompt_lower
-            emoji = "😊" if any(e in prompt_lower for e in ("emoji", "smile", "comment", "chat")) else None
-
-            res = browser_controller.execute_youtube_action(
-                target,
-                subscribe=subscribe_flag,
-                find_live=live_flag,
-                comment_or_emoji=emoji
-            )
-            msg = res.get("message", "Processing YouTube workflow in Chrome for you, Sir.")
-            memory.add_message(session_id, "user", user_prompt)
-            memory.add_message(session_id, "assistant", msg)
-            if on_chunk:
-                on_chunk(msg)
-            return msg
-
-        # Direct intent intercept for opening any application on the PC
-        # e.g., "open excel", "launch discord", "start spotify", "open epic games"
-        if any(prompt_lower.startswith(prefix) for prefix in ("open ", "launch ", "start ", "run ")) and not any(w in prompt_lower for w in ("python", "code in", "script")):
-            for prefix in ("open ", "launch ", "start ", "run "):
-                if prompt_lower.startswith(prefix):
-                    target_app = prompt_lower[len(prefix):].strip().rstrip(".!?,")
-                    # Check if target app exists in our PC registry index
-                    if app_controller.find_software(target_app):
-                        res = app_controller.launch_app(target_app)
-                        msg = res.get("message", f"Launched '{target_app}', Sir.")
-                        memory.add_message(session_id, "user", user_prompt)
-                        memory.add_message(session_id, "assistant", msg)
-                        if on_chunk:
-                            on_chunk(msg)
-                        return msg
-                    break
-
-        # Direct intent intercept for closing/terminating any application on the PC
-        # e.g., "close excel", "exit spotify", "terminate discord", "kill notepad"
-        if any(prompt_lower.startswith(prefix) for prefix in ("close ", "exit ", "kill ", "quit ", "stop ", "terminate ")):
-            for prefix in ("close ", "exit ", "kill ", "quit ", "stop ", "terminate "):
-                if prompt_lower.startswith(prefix):
-                    target_app = prompt_lower[len(prefix):].strip().rstrip(".!?,")
-                    res = app_controller.close_app(target_app)
-                    msg = res.get("message", f"Closed '{target_app}', Sir.")
-                    memory.add_message(session_id, "user", user_prompt)
-                    memory.add_message(session_id, "assistant", msg)
-                    if on_chunk:
-                        on_chunk(msg)
-                    return msg
-
-        # Direct intent intercept for software/code generation requests
-        coding_markers = (
-            "write code", "write a script", "write python", "create a python",
-            "create an app", "create a script", "build an app", "build a python",
-            "code a ", "write a program", "create a program", "build a program"
-        )
-        if any(marker in prompt_lower for marker in coding_markers) or (
-            any(verb in prompt_lower for verb in ("create a ", "build a ", "make a ", "write a ")) and
-            any(noun in prompt_lower for noun in ("calculator", "game", "ui", "interface", "scraper", "crawler", "bot", "tool", "converter", "timer", "clock", "editor"))
-        ):
-            from automation.coding_agent import CodingAgent
-            coder = CodingAgent(self)
-            msg = coder.generate_and_deliver_code(user_prompt, session_id=session_id)
-            memory.add_message(session_id, "user", user_prompt)
-            memory.add_message(session_id, "assistant", msg)
-            if on_chunk:
-                on_chunk(msg)
-            return msg
 
         # Handle offline fallback with smart heuristics
         if self._active_provider == "offline":
@@ -452,7 +368,12 @@ Live System Telemetry:
                 })
 
                 # Second turn: synthesize response
-                final_reply = self._dispatch_chat(messages)
+                try:
+                    final_reply = self._dispatch_chat(messages)
+                    if not final_reply or HermesToolParser.parse_tool_call(final_reply):
+                        final_reply = tool_result.get("message") or f"Operation '{tool_name}' completed successfully, Sir."
+                except Exception:
+                    final_reply = tool_result.get("message") or f"Operation '{tool_name}' completed successfully, Sir."
                 memory.add_message(session_id, "assistant", final_reply)
                 if on_chunk:
                     on_chunk(final_reply)
