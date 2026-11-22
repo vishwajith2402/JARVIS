@@ -9,16 +9,20 @@
   },
   "agent": {
     "engine": "auto",
-    "primary_model": "hermes3:8b",
+    "primary_model": "llama3.2:3b",
     "fallback_models": [
+      "llama3.2:3b",
       "hermes3:8b",
-      "qwen2.5-coder:7b",
       "phi3.5:latest"
     ],
     "vision_model": "moondream:latest",
     "temperature": 0.2,
-    "max_tokens": 1024,
+    "max_tokens": 2048,
     "stream": true,
+    "keep_alive": -1,
+    "num_ctx": 4096,
+    "num_thread": 6,
+    "flash_attention": true,
     "endpoints": {
       "ollama": "http://127.0.0.1:11434",
       "msty": "http://127.0.0.1:1024/v1",

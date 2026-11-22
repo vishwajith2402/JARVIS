@@ -24,9 +24,15 @@ from vision.visual_analyzer import visual_analyzer
 class UniversalAgentBrain:
     def __init__(self):
         self.user_title = config.get("system", "user_title", "Sir")
-        self.primary_model = config.get("agent", "primary_model", "hermes3:8b")
+        self.primary_model = config.get("agent", "primary_model", "llama3.2:3b")
         self._active_provider = "none"
         self._active_endpoint = ""
+        self._query_cache: Dict[str, str] = {
+            "who are you": "I am TITAN, your personal tactical desktop AI assistant running locally on your HP Victus hardware.",
+            "what is your name": "My name is TITAN, Sir.",
+            "what can you do": "I can execute A-to-Z automation: write and run code, browse the web and YouTube, open and close software, manage your files, adjust system controls, and monitor hardware.",
+            "help": "You can speak or type commands to open software, write code in the Code Assistant, search YouTube, adjust volume, inspect projects, or run deep research queries.",
+        }
         self._detect_provider()
 
     def _detect_provider(self) -> Tuple[str, str]:
@@ -257,6 +263,16 @@ Live System Telemetry:
 
         # Direct intent intercept for browser, youtube, and media automation
         prompt_lower = user_prompt.lower().strip()
+
+        # Instant 1ms LRU query cache for deterministic questions
+        cache_key = prompt_lower.rstrip("?.!")
+        if cache_key in self._query_cache:
+            reply = self._query_cache[cache_key]
+            memory.add_message(session_id, "user", user_prompt)
+            memory.add_message(session_id, "assistant", reply)
+            if on_chunk:
+                on_chunk(reply)
+            return reply
         if any(w in prompt_lower for w in ("youtube", "open chrome", "browse", "navigate to", "oru vela")):
             # Extract target channel/video query
             import re
@@ -386,18 +402,27 @@ Live System Telemetry:
             memory.add_message(session_id, "assistant", err_msg)
             return err_msg
 
-    def _dispatch_chat(self, messages: List[Dict[str, str]]) -> str:
+    def _dispatch_chat(self, messages: List[Dict[str, str]], on_chunk: Optional[Callable[[str], None]] = None) -> str:
         if self._active_provider == "ollama":
             endpoint = f"{self._active_endpoint}/api/chat"
+            use_stream = bool(on_chunk)
             payload = {
                 "model": self.primary_model,
                 "messages": messages,
-                "stream": False,
-                "options": {"temperature": config.get("agent", "temperature", 0.2)}
+                "stream": use_stream,
+                "keep_alive": -1,
+                "options": {
+                    "temperature": config.get("agent", "temperature", 0.2),
+                    "num_ctx": config.get("agent", "num_ctx", 4096),
+                    "num_thread": config.get("agent", "num_thread", 6),
+                    "num_gpu": 99,
+                    "f16_kv": True
+                }
             }
         else:
             # OpenAI compatible endpoint (Msty, LM Studio, etc.)
             endpoint = f"{self._active_endpoint}/chat/completions"
+            use_stream = False
             payload = {
                 "model": self.primary_model,
                 "messages": messages,
@@ -410,12 +435,29 @@ Live System Telemetry:
             data=json.dumps(payload).encode("utf-8"),
             headers={"Content-Type": "application/json"}
         )
-        with urllib.request.urlopen(req, timeout=180) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-            if self._active_provider == "ollama":
-                return data.get("message", {}).get("content", "")
-            else:
-                return data.get("choices", [{}])[0].get("message", {}).get("content", "")
+
+        if use_stream and self._active_provider == "ollama":
+            full_text = []
+            with urllib.request.urlopen(req, timeout=180) as resp:
+                for line in resp:
+                    if line:
+                        try:
+                            chunk = json.loads(line.decode("utf-8"))
+                            piece = chunk.get("message", {}).get("content", "")
+                            if piece:
+                                full_text.append(piece)
+                                if on_chunk:
+                                    on_chunk(piece)
+                        except Exception:
+                            continue
+            return "".join(full_text)
+        else:
+            with urllib.request.urlopen(req, timeout=180) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                if self._active_provider == "ollama":
+                    return data.get("message", {}).get("content", "")
+                else:
+                    return data.get("choices", [{}])[0].get("message", {}).get("content", "")
 
     def _handle_offline_intent(self, text: str) -> str:
         lower = text.lower().strip()
