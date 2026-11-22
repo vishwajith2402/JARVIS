@@ -435,6 +435,112 @@ class HermesToolParser:
                     "required": []
                 }
             }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "plan_business_goal",
+                "description": "Establish and hierarchically decompose a company strategic goal into departmental milestones (Engineering, Marketing, Sales, Operations).",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "title": {"type": "string", "description": "High-level strategic business objective or goal."},
+                        "description": {"type": "string", "description": "Detailed business context and desired outcomes."},
+                        "category": {"type": "string", "description": "Category (growth, revenue, product, branding)."}
+                    },
+                    "required": ["title", "description"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "generate_invoice",
+                "description": "Generate a professional client invoice in clean responsive HTML and save to disk.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "client_name": {"type": "string", "description": "Client company or person name."},
+                        "client_email": {"type": "string", "description": "Client email address."},
+                        "line_items": {"type": "array", "items": {"type": "object"}, "description": "List of items with description, quantity, and rate."},
+                        "tax_pct": {"type": "number", "description": "Tax percentage (e.g. 0.0 or 10.0)."}
+                    },
+                    "required": ["client_name", "line_items"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "manage_leads",
+                "description": "Add, list, or update B2B sales prospects and CRM deals.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "action": {"type": "string", "enum": ["add", "list", "update"], "description": "Action to perform."},
+                        "company": {"type": "string", "description": "Company name."},
+                        "contact_name": {"type": "string", "description": "Contact person name."},
+                        "estimated_value": {"type": "number", "description": "Deal value in USD."},
+                        "status": {"type": "string", "description": "CRM status (new, contacted, qualified, proposal, won, lost)."}
+                    },
+                    "required": ["action"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "craft_cold_outreach",
+                "description": "Draft a personalized, high-converting B2B cold outreach email to a prospect.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "company": {"type": "string", "description": "Target prospect company name."},
+                        "contact_name": {"type": "string", "description": "Prospect contact name."},
+                        "pain_point": {"type": "string", "description": "Specific business or technical pain point to address."}
+                    },
+                    "required": ["company"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "get_business_summary",
+                "description": "Retrieve comprehensive company health metrics (revenue, profit, CRM pipeline, OKR progress).",
+                "parameters": {"type": "object", "properties": {}, "required": []}
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "analyze_competitors",
+                "description": "Produce a competitive analysis report, SWOT breakdown, and strategic positioning matrix.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "industry": {"type": "string", "description": "Industry niche or product category."},
+                        "competitors": {"type": "array", "items": {"type": "string"}, "description": "List of competitor names."}
+                    },
+                    "required": ["industry"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "generate_marketing_content",
+                "description": "Generate high-converting marketing campaigns, blog posts, social threads, or press releases.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "content_type": {"type": "string", "enum": ["blog_post", "social_thread", "product_announcement"], "description": "Type of marketing asset."},
+                        "topic": {"type": "string", "description": "Topic or launch subject."},
+                        "target_audience": {"type": "string", "description": "Target customer segment."}
+                    },
+                    "required": ["content_type", "topic"]
+                }
+            }
         }
     ]
 

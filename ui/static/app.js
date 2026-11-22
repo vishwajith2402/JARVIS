@@ -19,6 +19,8 @@ function switchView(tabId) {
   });
   if (tabId === "tab-profile") {
     loadExecutiveProfile();
+  } else if (tabId === "tab-business") {
+    loadBusinessDashboard();
   }
 }
 
@@ -442,6 +444,10 @@ const SPOTLIGHT_ACTIONS = [
   { id: "screen_capture", icon: "👁️", title: "Vision Screen Debugger", desc: "Inspect display, diagnose visual bugs & errors", tag: "Vision" },
   { id: "toggle_voice_daemon", icon: "🎙️", title: "Toggle Hands-Free Voice", desc: "Enable/disable continuous 'Hey Titan' wake word", tag: "Voice" },
   { id: "deep_research", icon: "🔍", title: "Deep Web Research", desc: "Multi-site autonomous research & synthesis", tag: "Web" },
+  { id: "open_business", icon: "🏢", title: "Autonomous Business Hub", desc: "Access Invoicing, CRM pipeline & OKR milestones", tag: "Business" },
+  { id: "biz_invoice", icon: "🧾", title: "Issue Client Invoice", desc: "Create professional HTML invoice and log to ledger", tag: "Finance" },
+  { id: "biz_goal", icon: "🎯", title: "Plan Business Goal & OKR", desc: "Decompose company goal into department milestones", tag: "Strategy" },
+  { id: "biz_lead", icon: "💼", title: "Add B2B Sales Prospect", desc: "Log a new client lead into CRM pipeline", tag: "Sales" },
   { id: "open_profile", icon: "👤", title: "Executive Memory & Profile", desc: "View and edit personalized developer rules & facts", tag: "Profile" },
   { id: "quick_clean", icon: "🧹", title: "Quick Clean Workstation", desc: "Purge temporary files and recycle bin", tag: "System" },
   { id: "lock_pc", icon: "🔒", title: "Lock Workstation", desc: "Secure workstation immediately", tag: "Security" }
@@ -531,6 +537,21 @@ function executeSpotlightAction(actionId) {
   if (actionId === "open_profile") {
     switchView("tab-profile");
     return;
+  } else if (actionId === "open_business") {
+    switchView("tab-business");
+    return;
+  } else if (actionId === "biz_invoice") {
+    switchView("tab-business");
+    promptNewInvoice();
+    return;
+  } else if (actionId === "biz_goal") {
+    switchView("tab-business");
+    promptNewGoal();
+    return;
+  } else if (actionId === "biz_lead") {
+    switchView("tab-business");
+    promptNewLead();
+    return;
   } else if (actionId === "tile_windows") {
     quickAction("arrange_workspace");
     return;
@@ -556,3 +577,165 @@ window.addEventListener("keydown", (e) => {
     closeSpotlight();
   }
 });
+
+// ==========================================================================
+// AUTONOMOUS BUSINESS OPERATIONS DASHBOARD
+// ==========================================================================
+async function loadBusinessDashboard() {
+  if (!window.pywebview || !window.pywebview.api) return;
+
+  try {
+    if (window.pywebview.api.get_business_summary) {
+      const summary = await window.pywebview.api.get_business_summary();
+      if (summary && summary.metrics) {
+        const m = summary.metrics;
+        document.getElementById("bizRevenue").textContent = `$${(m.total_revenue || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        document.getElementById("bizProfit").textContent = `$${(m.net_profit || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        document.getElementById("bizPipeline").textContent = `$${(m.pipeline_value || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        document.getElementById("bizGoals").textContent = `${m.active_strategic_goals || 0} Active (${m.average_okr_progress_pct || 0}%)`;
+      }
+    }
+
+    if (window.pywebview.api.get_business_goals) {
+      const goals = await window.pywebview.api.get_business_goals();
+      renderBusinessGoals(goals || []);
+    }
+
+    if (window.pywebview.api.get_business_leads) {
+      const leads = await window.pywebview.api.get_business_leads();
+      renderBusinessLeads(leads || []);
+    }
+
+    if (window.pywebview.api.get_business_invoices) {
+      const invoices = await window.pywebview.api.get_business_invoices();
+      renderBusinessInvoices(invoices || []);
+    }
+  } catch (err) {
+    console.error("Error loading business hub:", err);
+  }
+}
+
+function renderBusinessGoals(goals) {
+  const container = document.getElementById("bizGoalsList");
+  if (!container) return;
+
+  if (goals.length === 0) {
+    container.innerHTML = `<div class="biz-item" style="color:var(--text-muted); text-align:center;">No active business goals. Click '+ Plan Strategic Goal'.</div>`;
+    return;
+  }
+
+  container.innerHTML = goals.map(g => `
+    <div class="biz-item">
+      <div class="biz-item-row">
+        <span class="biz-item-title">${g.title}</span>
+        <span class="kpi-tag yellow">${g.progress_pct || 0}% Done</span>
+      </div>
+      <div class="biz-item-sub">${g.description || ""}</div>
+      <div class="biz-item-sub" style="color:var(--brand-secondary); margin-top:2px;">
+        ${(g.milestones || []).length} Department Milestones Linked
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderBusinessLeads(leads) {
+  const container = document.getElementById("bizLeadsList");
+  if (!container) return;
+
+  if (leads.length === 0) {
+    container.innerHTML = `<div class="biz-item" style="color:var(--text-muted); text-align:center;">No active leads. Click '+ Add B2B Lead'.</div>`;
+    return;
+  }
+
+  container.innerHTML = leads.map(l => `
+    <div class="biz-item">
+      <div class="biz-item-row">
+        <span class="biz-item-title">${l.company}</span>
+        <span class="kpi-tag green">$${(l.estimated_value || 0).toLocaleString()}</span>
+      </div>
+      <div class="biz-item-sub">${l.contact_name || "Contact"} (${l.role || "Executive"})</div>
+      <div class="biz-item-row mt-1">
+        <span class="biz-item-sub">${l.email || ""}</span>
+        <span class="kpi-tag purple">${l.status.toUpperCase()}</span>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderBusinessInvoices(invoices) {
+  const container = document.getElementById("bizInvoicesList");
+  if (!container) return;
+
+  if (invoices.length === 0) {
+    container.innerHTML = `<div class="biz-item" style="color:var(--text-muted); text-align:center;">No client invoices. Click '+ Issue New Invoice'.</div>`;
+    return;
+  }
+
+  container.innerHTML = invoices.map(inv => `
+    <div class="biz-item">
+      <div class="biz-item-row">
+        <span class="biz-item-title">${inv.invoice_number}</span>
+        <span class="kpi-tag blue">$${(inv.total || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+      </div>
+      <div class="biz-item-sub">Client: ${inv.client_name} (${inv.client_email || "No email"})</div>
+      <div class="biz-item-row mt-1">
+        <span class="biz-item-sub">Due: ${inv.due_date}</span>
+        <span class="kpi-tag green">${inv.status.toUpperCase()}</span>
+      </div>
+    </div>
+  `).join("");
+}
+
+async function promptNewInvoice() {
+  const client = prompt("Enter Client Name:", "Acme AI Corp");
+  if (!client) return;
+  const email = prompt("Enter Client Email:", "billing@acme.ai") || "";
+  const service = prompt("Enter Service Description:", "AI Integration & Architecture") || "Technical Consulting";
+  const rateStr = prompt("Enter Rate (USD):", "2500");
+  const rate = parseFloat(rateStr) || 2500.0;
+
+  if (window.pywebview && window.pywebview.api && window.pywebview.api.generate_business_invoice) {
+    const res = await window.pywebview.api.generate_business_invoice(client, email, [{description: service, quantity: 1, rate: rate}], 0.0);
+    loadBusinessDashboard();
+    appendMessage("System", `Generated Client Invoice: ${res.invoice_number} for $${rate.toLocaleString()} USD (Saved to ${res.file_path}).`, "assistant");
+  }
+}
+
+async function promptNewGoal() {
+  const title = prompt("Enter Strategic Goal Title:", "Launch AI Consulting Retainer Package");
+  if (!title) return;
+  const desc = prompt("Enter Goal Description:", "Acquire 5 client retainers for private desktop AI agent integration") || "";
+
+  if (window.pywebview && window.pywebview.api && window.pywebview.api.create_business_goal) {
+    const res = await window.pywebview.api.create_business_goal(title, desc, "growth");
+    loadBusinessDashboard();
+    appendMessage("System", `Strategic Business Goal Created: '${title}' decomposed into Engineering, Marketing, Sales, and Ops milestones.`, "assistant");
+  }
+}
+
+async function promptNewLead() {
+  const company = prompt("Enter Company Name:", "TechNova Labs");
+  if (!company) return;
+  const contact = prompt("Enter Contact Name:", "Sarah Jenkins") || "";
+  const role = prompt("Enter Role:", "VP of Engineering") || "";
+  const email = prompt("Enter Email:", "sarah@technova.io") || "";
+  const valStr = prompt("Enter Estimated Deal Value ($):", "4000");
+  const val = parseFloat(valStr) || 4000.0;
+
+  if (window.pywebview && window.pywebview.api && window.pywebview.api.add_business_lead) {
+    await window.pywebview.api.add_business_lead(company, contact, role, email, val, "Qualified inbound lead");
+    loadBusinessDashboard();
+    appendMessage("System", `New CRM Lead Logged: ${company} ($${val.toLocaleString()} USD) - ${contact}.`, "assistant");
+  }
+}
+
+async function promptMarketingCampaign() {
+  const topic = prompt("Enter Product or Campaign Topic:", "Autonomous Local AI Agents for Enterprise Workstations");
+  if (!topic) return;
+
+  if (window.pywebview && window.pywebview.api && window.pywebview.api.create_marketing_campaign) {
+    const res = await window.pywebview.api.create_marketing_campaign("social_thread", topic);
+    switchView("tab-chat");
+    appendMessage("TITAN", `Generated High-Conversion Marketing Thread for '${topic}':\n\n${res.content}`, "assistant");
+  }
+}

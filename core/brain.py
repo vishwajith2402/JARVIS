@@ -302,6 +302,59 @@ class UniversalAgentBrain:
                 q = args.get("query")
                 return {"success": True, "facts": executive_profile.recall_facts(q)}
 
+            elif tool_name == "plan_business_goal":
+                from automation.business_engine import business_engine
+                t = args.get("title", "")
+                d = args.get("description", "")
+                c = args.get("category", "growth")
+                return business_engine.plan_business_goal(t, d, c)
+
+            elif tool_name == "generate_invoice":
+                from automation.business_engine import business_engine
+                cn = args.get("client_name", "Client")
+                ce = args.get("client_email", "")
+                items = args.get("line_items", [{"description": "Technical Consulting", "quantity": 1, "rate": 500.0}])
+                tax = float(args.get("tax_pct", 0.0))
+                due = int(args.get("due_days", 14))
+                return business_engine.generate_invoice(cn, ce, items, tax, due)
+
+            elif tool_name == "manage_leads":
+                from automation.business_engine import business_engine
+                act = args.get("action", "list").lower()
+                if act == "add":
+                    return business_engine.add_lead(
+                        args.get("company", "Company"),
+                        args.get("contact_name", ""),
+                        args.get("role", "Executive"),
+                        args.get("email", ""),
+                        float(args.get("estimated_value", 1500.0)),
+                        args.get("notes", "")
+                    )
+                elif act == "update":
+                    return business_engine.update_lead_status(int(args.get("lead_id", 1)), args.get("status", "contacted"), args.get("notes"))
+                return {"success": True, "leads": business_engine.list_leads(args.get("status"))}
+
+            elif tool_name == "craft_cold_outreach":
+                from automation.business_engine import business_engine
+                return business_engine.craft_cold_outreach(args.get("company", ""), args.get("contact_name", ""), args.get("pain_point", "automating operations"))
+
+            elif tool_name == "get_business_summary":
+                from automation.business_engine import business_engine
+                return business_engine.get_business_summary()
+
+            elif tool_name == "analyze_competitors":
+                from automation.business_engine import business_engine
+                ind = args.get("industry", "AI Software")
+                comps = args.get("competitors", ["Traditional Agencies", "Generic SaaS"])
+                return business_engine.analyze_competitors(ind, comps)
+
+            elif tool_name == "generate_marketing_content":
+                from automation.business_engine import business_engine
+                ct = args.get("content_type", "social_thread")
+                top = args.get("topic", "Autonomous Business Operations")
+                aud = args.get("target_audience", "Founders & Engineers")
+                return business_engine.generate_marketing_content(ct, top, aud)
+
             elif tool_name == "web_download":
                 from automation.web_agent import web_agent
                 return web_agent.download_file(args.get("url", ""), args.get("filename"))

@@ -49,6 +49,13 @@ class PermissionManager:
             "manage_profile": PermissionLevel.LEVEL_1_AUTO,
             "remember_fact": PermissionLevel.LEVEL_1_AUTO,
             "recall_facts": PermissionLevel.LEVEL_1_AUTO,
+            "plan_business_goal": PermissionLevel.LEVEL_1_AUTO,
+            "generate_invoice": PermissionLevel.LEVEL_1_AUTO,
+            "manage_leads": PermissionLevel.LEVEL_1_AUTO,
+            "craft_cold_outreach": PermissionLevel.LEVEL_1_AUTO,
+            "get_business_summary": PermissionLevel.LEVEL_1_AUTO,
+            "analyze_competitors": PermissionLevel.LEVEL_1_AUTO,
+            "generate_marketing_content": PermissionLevel.LEVEL_1_AUTO,
 
             # Level 2
             "create_new_skill": PermissionLevel.LEVEL_2_CONFIRM,

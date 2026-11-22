@@ -192,6 +192,41 @@ class JarvisApiBridge:
             voice_daemon.start()
             return {"success": True, "active": True, "message": "Hands-free voice daemon active. Listening for 'Hey Titan', Sir."}
 
+    # =========================================================================
+    # ENTERPRISE BUSINESS BRIDGE API
+    # =========================================================================
+    def get_business_summary(self) -> Dict[str, Any]:
+        from automation.business_engine import business_engine
+        return business_engine.get_business_summary()
+
+    def get_business_goals(self) -> List[Dict[str, Any]]:
+        from automation.business_engine import business_engine
+        return business_engine.list_business_goals()
+
+    def create_business_goal(self, title: str, description: str, category: str = "growth") -> Dict[str, Any]:
+        from automation.business_engine import business_engine
+        return business_engine.plan_business_goal(title, description, category)
+
+    def get_business_leads(self) -> List[Dict[str, Any]]:
+        from automation.business_engine import business_engine
+        return business_engine.list_leads()
+
+    def add_business_lead(self, company: str, contact: str, role: str, email: str, value: float = 1500.0, notes: str = "") -> Dict[str, Any]:
+        from automation.business_engine import business_engine
+        return business_engine.add_lead(company, contact, role, email, value, notes)
+
+    def get_business_invoices(self) -> List[Dict[str, Any]]:
+        from automation.business_engine import business_engine
+        return business_engine.list_invoices()
+
+    def generate_business_invoice(self, client_name: str, client_email: str, items: List[Dict[str, Any]], tax_pct: float = 0.0) -> Dict[str, Any]:
+        from automation.business_engine import business_engine
+        return business_engine.generate_invoice(client_name, client_email, items, tax_pct)
+
+    def create_marketing_campaign(self, content_type: str, topic: str, audience: str = "Founders") -> Dict[str, Any]:
+        from automation.business_engine import business_engine
+        return business_engine.generate_marketing_content(content_type, topic, audience)
+
 
 def run_hud():
     """Launch the HUD desktop window."""
