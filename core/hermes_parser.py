@@ -69,6 +69,20 @@ class HermesToolParser:
         {
             "type": "function",
             "function": {
+                "name": "arrange_workspace",
+                "description": "Auto-tile and arrange open software side-by-side (e.g. VS Code on the left half, Chrome on the right half).",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "left_app": {"type": "string", "description": "Software to tile on the left half of the display."},
+                        "right_app": {"type": "string", "description": "Software to tile on the right half of the display."}
+                    }
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
                 "name": "find_projects",
                 "description": "Scan and locate local programming repositories sorted by most recently modified.",
                 "parameters": {
@@ -345,6 +359,36 @@ class HermesToolParser:
                 "name": "empty_recycle_bin",
                 "description": "Clean and empty the Windows Recycle Bin.",
                 "parameters": {"type": "object", "properties": {}, "required": []}
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "arrange_workspace",
+                "description": "Tile two open application windows side-by-side (50% left, 50% right) on screen.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "left_app": {"type": "string", "description": "Name or executable of app for left side (e.g. 'code', 'notepad')."},
+                        "right_app": {"type": "string", "description": "Name or executable of app for right side (e.g. 'chrome', 'edge')."}
+                    },
+                    "required": ["left_app", "right_app"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "deep_web_research",
+                "description": "Perform deep multi-site web research, extract key content, and display synthesis.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "query": {"type": "string", "description": "The search query or research topic."},
+                        "max_sites": {"type": "integer", "description": "Maximum number of sites to crawl and extract (default: 3)."}
+                    },
+                    "required": ["query"]
+                }
             }
         }
     ]

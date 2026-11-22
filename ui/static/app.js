@@ -54,7 +54,12 @@ function appendMessage(sender, text, roleClass) {
 
   const body = document.createElement("div");
   body.className = "message-body";
-  body.innerText = text;
+  
+  if (roleClass === "assistant") {
+    body.innerHTML = formatAssistantContent(text);
+  } else {
+    body.innerText = text;
+  }
 
   msgDiv.appendChild(meta);
   msgDiv.appendChild(body);
@@ -66,6 +71,85 @@ function appendMessage(sender, text, roleClass) {
   });
 }
 
+function formatAssistantContent(rawText) {
+  if (!rawText) return "";
+
+  // 1. Process code blocks ```lang ... ```
+  let formatted = rawText.replace(/```([a-zA-Z0-9_]*)\n?([\s\S]*?)```/g, (match, lang, code) => {
+    const language = lang || "code";
+    const escapedCode = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    return `
+      <div class="code-card">
+        <div class="code-header">
+          <span class="lang-tag">${language.toUpperCase()}</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy Code</button>
+        </div>
+        <pre><code>${escapedCode}</code></pre>
+      </div>
+    `;
+  });
+
+  // 2. Detect Action Notifications and render as glowing Action Card
+  const isAction = /chrome has been launched|launched ['"]|closed ['"]|volume (increased|decreased|mute)|recycle bin|task #|download complete|maintenance complete/i.test(rawText);
+  if (isAction && !formatted.includes("class=\"code-card\"")) {
+    return `
+      <div class="action-card">
+        <div class="action-card-header">
+          <span class="action-badge">⚡ WORKSPACE ACTION EXECUTED</span>
+          <span class="action-status">✔ Verified</span>
+        </div>
+        <div class="action-card-body">${formatted.replace(/\n/g, "<br/>")}</div>
+      </div>
+    `;
+  }
+
+  // 3. Format markdown bold, bullets, line breaks
+  formatted = formatted
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*([^*]+)\*/g, "<em>$1</em>")
+    .replace(/`([^`]+)`/g, "<code style='background:rgba(255,255,255,0.08);padding:2px 5px;border-radius:4px;color:#00e5ff;font-family:var(--font-mono);font-size:12px;'>$1</code>")
+    .replace(/\n\n/g, "<br/><br/>")
+    .replace(/\n- /g, "<br/>• ");
+
+  return formatted;
+}
+
+function copyCode(btn) {
+  const code = btn.closest(".code-card").querySelector("code").innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    const orig = btn.innerText;
+    btn.innerText = "Copied!";
+    btn.style.background = "#10b981";
+    btn.style.color = "#000000";
+    setTimeout(() => {
+      btn.innerText = orig;
+      btn.style.background = "";
+      btn.style.color = "";
+    }, 2000);
+  });
+}
+
+function appendThinkingMessage(id) {
+  const thread = document.getElementById("chatThread");
+  const div = document.createElement("div");
+  div.id = id;
+  div.className = "message assistant";
+  div.innerHTML = `
+    <div class="message-meta"><span class="author">TITAN</span><span class="timestamp">Just now</span></div>
+    <div class="thinking-card">
+      <div class="thinking-spinner"></div>
+      <span>TITAN is reasoning & orchestrating local subsystems...</span>
+    </div>
+  `;
+  thread.appendChild(div);
+  requestAnimationFrame(() => { thread.scrollTop = thread.scrollHeight; });
+}
+
+function removeThinkingMessage(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+
 async function sendMessage() {
   const input = document.getElementById("userInput");
   const text = input.value.trim();
@@ -74,21 +158,23 @@ async function sendMessage() {
   appendMessage("You", text, "user");
   input.value = "";
 
-  const statusMsg = currentAgentMode === "code_interpreter"
-    ? "Generating code and preparing sandbox..."
-    : (currentAgentMode === "deep_research" ? "Synthesizing deep knowledge base..." : "Processing request...");
-  setOrbStatus(statusMsg, true);
+  const thinkingId = "thinking-" + Date.now();
+  appendThinkingMessage(thinkingId);
+  setOrbStatus("TITAN is reasoning...", true);
 
   try {
     if (window.pywebview && window.pywebview.api) {
       const response = await window.pywebview.api.process_user_message(text);
+      removeThinkingMessage(thinkingId);
       appendMessage("TITAN", response, "assistant");
     } else {
       setTimeout(() => {
+        removeThinkingMessage(thinkingId);
         appendMessage("TITAN", "Simulation response: " + text, "assistant");
       }, 500);
     }
   } catch (err) {
+    removeThinkingMessage(thinkingId);
     appendMessage("TITAN", "Communication error: " + err, "assistant");
   } finally {
     setOrbStatus("TITAN is ready. Type or speak your command.", false);

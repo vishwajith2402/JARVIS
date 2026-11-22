@@ -78,7 +78,7 @@ class BrowserController:
         """
         cleaned_query = query_or_channel.replace("channel", "").strip()
         if not cleaned_query:
-            cleaned_query = "oru vela irukumo"
+            cleaned_query = "trending"
 
         def _workflow():
             try:
@@ -258,6 +258,34 @@ class BrowserController:
                     return {"success": True, "title": target, "content": clean_text.strip(), "url": target}
             except Exception as e:
                 return {"success": False, "error": str(e)}
+
+    def deep_web_research(self, query: str, max_sites: int = 3) -> Dict[str, Any]:
+        """Deep visual and text research across top web sources."""
+        from automation.web_researcher import web_researcher
+        results = web_researcher.search(query, max_results=max_sites)
+        site_summaries = []
+
+        for item in results:
+            url = item.get("href") or item.get("url", "")
+            title = item.get("title", url)
+            if url:
+                extracted = self.browse_and_extract(url)
+                site_summaries.append({
+                    "title": title,
+                    "url": url,
+                    "content": extracted.get("content", item.get("body", ""))[:600]
+                })
+
+        # Also open Google Search in persistent Chrome for the user
+        self.google_search(query)
+
+        msg = f"Completed deep web research across {len(site_summaries)} sources for '{query}', Sir. Chrome is active with your search results."
+        return {
+            "success": True,
+            "query": query,
+            "sources": site_summaries,
+            "message": msg
+        }
 
     def navigate_and_interact(self, url: str) -> Dict[str, Any]:
         """Generic web navigation."""

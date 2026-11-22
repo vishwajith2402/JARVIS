@@ -173,7 +173,7 @@ class UniversalAgentBrain:
                 # Normalize target if model passed full URL
                 if "youtube.com/" in tgt:
                     tgt = tgt.rstrip("/").split("/")[-1].replace("@", "").replace("user/", "")
-                if act in ("youtube_search", "subscribe", "youtube") or "youtube" in tgt.lower() or "channel" in tgt.lower() or "oru vela" in tgt.lower() or "subscribe" in str(extra).lower():
+                if act in ("youtube_search", "subscribe", "youtube") or "youtube" in tgt.lower() or "channel" in tgt.lower() or "subscribe" in str(extra).lower():
                     should_sub = args.get("subscribe", True) or "subscribe" in str(extra).lower()
                     emoji = extra if extra and any(e in extra for e in ("😊", "smile", "emoji")) else None
                     return browser_controller.execute_youtube_action(
@@ -185,6 +185,11 @@ class UniversalAgentBrain:
                 elif act == "open_url":
                     return browser_controller.open_url(tgt)
                 return browser_controller.navigate_and_interact(tgt)
+
+            elif tool_name == "deep_web_research":
+                q = args.get("query", "")
+                limit = int(args.get("max_sites", 3))
+                return browser_controller.deep_web_research(q, max_sites=limit)
 
             elif tool_name == "execute_python":
                 from automation.code_interpreter import code_interpreter
@@ -237,6 +242,11 @@ class UniversalAgentBrain:
 
             elif tool_name == "empty_recycle_bin":
                 return system_control.empty_recycle_bin()
+
+            elif tool_name == "arrange_workspace":
+                left = args.get("left_app", "code")
+                right = args.get("right_app", "chrome")
+                return app_controller.arrange_workspace_windows(left, right)
 
             elif tool_name == "execute_routine":
                 from automation.routines import routines
@@ -457,6 +467,17 @@ Live System Telemetry:
         elif "lock" in lower and ("pc" in lower or "computer" in lower or "system" in lower):
             system_control.lock_workstation()
             return f"Locking workstation now, {self.user_title}."
+        elif any(w in lower for w in ("youtube", "open chrome", "browse", "navigate")):
+            from automation.browser_controller import browser_controller
+            target = ""
+            for marker in ("search for", "search", "navigate to", "channel", "open"):
+                if marker in lower:
+                    parts = lower.split(marker)
+                    if len(parts) > 1 and parts[-1].strip():
+                        target = parts[-1].strip().replace("channel", "").strip()
+                        break
+            res = browser_controller.execute_youtube_action(target or "trending")
+            return res.get("message", f"Navigated to YouTube for '{target or 'trending'}', Sir.")
 
         return (
             f"Good day, {self.user_title}. All local AI runtimes (Ollama, Msty Studio, LM Studio) are currently offline. "

@@ -44,6 +44,8 @@ class PermissionManager:
             "manage_tasks": PermissionLevel.LEVEL_1_AUTO,
             "extract_web_data": PermissionLevel.LEVEL_1_AUTO,
             "generate_code": PermissionLevel.LEVEL_1_AUTO,
+            "arrange_workspace": PermissionLevel.LEVEL_1_AUTO,
+            "deep_web_research": PermissionLevel.LEVEL_1_AUTO,
 
             # Level 2
             "create_new_skill": PermissionLevel.LEVEL_2_CONFIRM,

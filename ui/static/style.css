@@ -572,6 +572,134 @@ body.dark-theme {
   color: #ffffff;
 }
 
+/* Rich Code Cards & Syntax Highlighting */
+.code-card {
+  margin: 10px 0;
+  background: #090d16;
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.code-header .lang-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: #00e5ff;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.code-header .copy-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #c9d1d9;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.code-header .copy-btn:hover {
+  background: #00e5ff;
+  color: #000000;
+}
+
+.code-card pre {
+  margin: 0;
+  padding: 12px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.5;
+  color: #e6edf3;
+}
+
+/* Live Action Cards */
+.action-card {
+  margin: 10px 0;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.08) 0%, rgba(9, 13, 22, 0.95) 100%);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  border-left: 4px solid #00e5ff;
+  border-radius: 8px;
+  padding: 12px 16px;
+  box-shadow: 0 4px 15px rgba(0, 229, 255, 0.1);
+}
+
+.action-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.action-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #00e5ff;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.action-badge::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00e5ff;
+  box-shadow: 0 0 8px #00e5ff;
+}
+
+.action-status {
+  font-size: 11px;
+  font-weight: 600;
+  color: #10b981;
+}
+
+.action-card-body {
+  font-size: 13.5px;
+  color: #f0f6fc;
+  line-height: 1.5;
+}
+
+/* Step Progress Indicator (Thinking) */
+.thinking-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  font-size: 12px;
+  color: #8b949e;
+  margin-bottom: 6px;
+}
+
+.thinking-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(0, 229, 255, 0.2);
+  border-top-color: #00e5ff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
 /* Fixed Command Bar (Raycast / Linear style) */
 .command-bar-wrapper {
   padding: 14px 28px 20px;

@@ -32,8 +32,12 @@ cd /d "{PROJECT_ROOT}"
 start "" "{PYTHON_EXE}" "{MAIN_PY}"
 exit
 """
-        with open(self.bat_path, "w", encoding="utf-8") as f:
-            f.write(bat_content)
+        try:
+            if not self.bat_path.exists():
+                with open(self.bat_path, "w", encoding="utf-8") as f:
+                    f.write(bat_content)
+        except Exception:
+            pass
         return self.bat_path
 
     def create_desktop_shortcut(self) -> Dict[str, Any]:

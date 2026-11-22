@@ -214,6 +214,44 @@ class UniversalAppController:
                     pass
         return False
 
+    def arrange_workspace_windows(self, left_app_name: str = "code", right_app_name: str = "chrome") -> Dict[str, Any]:
+        """Tiled desktop autopilot: positions left_app on left 50% and right_app on right 50%."""
+        import ctypes
+        import win32gui
+        import win32con
+
+        user32 = ctypes.windll.user32
+        sw = user32.GetSystemMetrics(0)
+        sh = user32.GetSystemMetrics(1)
+        half_w = sw // 2
+
+        windows = self.list_visible_windows()
+        left_hwnd = None
+        right_hwnd = None
+
+        for w in windows:
+            t = w["title"].lower()
+            if not left_hwnd and (left_app_name.lower() in t or ("code" in left_app_name.lower() and "visual studio" in t)):
+                left_hwnd = w["hwnd"]
+            elif not right_hwnd and (right_app_name.lower() in t or ("chrome" in right_app_name.lower() and "chrome" in t)):
+                right_hwnd = w["hwnd"]
+
+        arranged = []
+        if left_hwnd:
+            win32gui.ShowWindow(left_hwnd, win32con.SW_RESTORE)
+            win32gui.MoveWindow(left_hwnd, 0, 0, half_w, sh, True)
+            arranged.append(f"{left_app_name} (Left 50%)")
+
+        if right_hwnd:
+            win32gui.ShowWindow(right_hwnd, win32con.SW_RESTORE)
+            win32gui.MoveWindow(right_hwnd, half_w, 0, half_w, sh, True)
+            arranged.append(f"{right_app_name} (Right 50%)")
+
+        if arranged:
+            msg = f"Workspace organized, Sir: {', '.join(arranged)}."
+            return {"success": True, "arranged": arranged, "message": msg}
+        return {"success": False, "message": "Could not locate matching open windows to arrange, Sir."}
+
     def close_app(self, app_name: str, force: bool = False) -> Dict[str, Any]:
         """
         Gracefully or forcefully close any running application by software name, window title, or executable name.

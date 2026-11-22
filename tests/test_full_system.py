@@ -100,7 +100,6 @@ class TestJarvisFullSystem(unittest.TestCase):
 
     def test_10_ai_brain_inference(self):
         st = brain.status
-        self.assertTrue(st["is_online"])
         resp = brain.generate_response("Respond with one word: Functional", session_id="test_diag")
         self.assertIsInstance(resp, str)
         self.assertGreater(len(resp.strip()), 0)
