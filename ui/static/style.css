@@ -1530,6 +1530,283 @@ body.dark-theme {
 }
 
 /* ==========================================================================
+   TITAN HERO LANDING PAGE & LAUNCH SCREEN
+   ========================================================================== */
+.hero-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: radial-gradient(circle at 50% 25%, #13192f 0%, #060812 55%, #020306 100%);
+  display: flex;
+  flex-direction: column;
+  transition: opacity 0.45s var(--ease-spring), transform 0.45s var(--ease-spring);
+  overflow: hidden;
+}
+
+.hero-screen.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.97);
+}
+
+.hero-titlebar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 48px;
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.hero-brand-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+}
+
+.hero-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 40px 40px;
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Animated Holographic Core Logo */
+.hero-logo-wrapper {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.hero-ring {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.ring-outer {
+  width: 100%;
+  height: 100%;
+  border: 2px dashed rgba(99, 102, 241, 0.5);
+  animation: rotateClockwise 14s linear infinite;
+}
+
+.ring-middle {
+  width: 78%;
+  height: 78%;
+  border: 1.5px solid rgba(6, 182, 212, 0.45);
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  animation: rotateCounter 8s linear infinite;
+}
+
+.ring-inner {
+  width: 56%;
+  height: 56%;
+  border: 1.5px dashed rgba(244, 63, 94, 0.5);
+  animation: rotateClockwise 6s linear infinite;
+}
+
+.hero-core-glow {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #6366f1 0%, rgba(6, 182, 212, 0.6) 50%, transparent 80%);
+  filter: blur(10px);
+  animation: corePulse 3s infinite alternate ease-in-out;
+}
+
+.hero-core-center {
+  position: relative;
+  font-size: 26px;
+  color: #fff;
+  z-index: 2;
+  text-shadow: 0 0 16px #6366f1, 0 0 32px #06b6d4;
+  animation: floatBounce 3s infinite ease-in-out;
+}
+
+@keyframes rotateClockwise {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes rotateCounter {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes corePulse {
+  0% { transform: scale(0.85); opacity: 0.6; }
+  100% { transform: scale(1.25); opacity: 1; }
+}
+
+@keyframes floatBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* Typography */
+.hero-title {
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 40%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 6px;
+  filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.4));
+}
+
+.hero-subtitle {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #c7d2fe;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+.hero-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  max-width: 520px;
+  margin-bottom: 20px;
+}
+
+/* Badges */
+.hero-badge-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+.hero-badge {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 4px 12px;
+  border-radius: 9999px;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hero-badge .badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+}
+
+/* Main CTA Button "Let's Start" */
+.hero-btn-container {
+  margin-bottom: 38px;
+}
+
+.hero-cta-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 42px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  color: #ffffff;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #4338ca 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 10px 30px -5px rgba(99, 102, 241, 0.5), 0 0 25px rgba(6, 182, 212, 0.25);
+  transition: all 0.25s var(--ease-spring);
+  overflow: hidden;
+}
+
+.hero-cta-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 15px 40px -5px rgba(99, 102, 241, 0.7), 0 0 35px rgba(6, 182, 212, 0.4);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.hero-cta-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.hero-cta-btn .btn-arrow {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.25s ease;
+}
+
+.hero-cta-btn:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+/* Bottom Feature Cards */
+.hero-features-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  width: 100%;
+}
+
+.hero-feat-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.hero-feat-card:hover {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(99, 102, 241, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.5);
+}
+
+.feat-icon {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.feat-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.feat-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ==========================================================================
    ENTERPRISE BUSINESS OPERATIONS HUB STYLES
    ========================================================================== */
 .business-kpi-grid {
@@ -1832,4 +2109,281 @@ body.dark-theme {
   border-radius: 3px;
   padding: 1px 4px;
   font-family: var(--font-mono);
+}
+
+/* ==========================================================================
+   TITAN HERO LANDING PAGE & LAUNCH SCREEN
+   ========================================================================== */
+.hero-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: radial-gradient(circle at 50% 25%, #13192f 0%, #060812 55%, #020306 100%);
+  display: flex;
+  flex-direction: column;
+  transition: opacity 0.45s var(--ease-spring), transform 0.45s var(--ease-spring);
+  overflow: hidden;
+}
+
+.hero-screen.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.97);
+}
+
+.hero-titlebar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 48px;
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.hero-brand-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+}
+
+.hero-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 40px 40px;
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Animated Holographic Core Logo */
+.hero-logo-wrapper {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.hero-ring {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.ring-outer {
+  width: 100%;
+  height: 100%;
+  border: 2px dashed rgba(99, 102, 241, 0.5);
+  animation: rotateClockwise 14s linear infinite;
+}
+
+.ring-middle {
+  width: 78%;
+  height: 78%;
+  border: 1.5px solid rgba(6, 182, 212, 0.45);
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  animation: rotateCounter 8s linear infinite;
+}
+
+.ring-inner {
+  width: 56%;
+  height: 56%;
+  border: 1.5px dashed rgba(244, 63, 94, 0.5);
+  animation: rotateClockwise 6s linear infinite;
+}
+
+.hero-core-glow {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #6366f1 0%, rgba(6, 182, 212, 0.6) 50%, transparent 80%);
+  filter: blur(10px);
+  animation: corePulse 3s infinite alternate ease-in-out;
+}
+
+.hero-core-center {
+  position: relative;
+  font-size: 26px;
+  color: #fff;
+  z-index: 2;
+  text-shadow: 0 0 16px #6366f1, 0 0 32px #06b6d4;
+  animation: floatBounce 3s infinite ease-in-out;
+}
+
+@keyframes rotateClockwise {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes rotateCounter {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes corePulse {
+  0% { transform: scale(0.85); opacity: 0.6; }
+  100% { transform: scale(1.25); opacity: 1; }
+}
+
+@keyframes floatBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* Typography */
+.hero-title {
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 40%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 6px;
+  filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.4));
+}
+
+.hero-subtitle {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #c7d2fe;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+.hero-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  max-width: 520px;
+  margin-bottom: 20px;
+}
+
+/* Badges */
+.hero-badge-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+.hero-badge {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 4px 12px;
+  border-radius: 9999px;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hero-badge .badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+}
+
+/* Main CTA Button "Let's Start" */
+.hero-btn-container {
+  margin-bottom: 38px;
+}
+
+.hero-cta-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 42px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  color: #ffffff;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #4338ca 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 10px 30px -5px rgba(99, 102, 241, 0.5), 0 0 25px rgba(6, 182, 212, 0.25);
+  transition: all 0.25s var(--ease-spring);
+  overflow: hidden;
+}
+
+.hero-cta-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 15px 40px -5px rgba(99, 102, 241, 0.7), 0 0 35px rgba(6, 182, 212, 0.4);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.hero-cta-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.hero-cta-btn .btn-arrow {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.25s ease;
+}
+
+.hero-cta-btn:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+/* Bottom Feature Cards */
+.hero-features-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  width: 100%;
+}
+
+.hero-feat-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.hero-feat-card:hover {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(99, 102, 241, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.5);
+}
+
+.feat-icon {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.feat-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.feat-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
 }

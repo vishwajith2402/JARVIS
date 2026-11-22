@@ -1,13 +1,46 @@
 /**
- * TITAN Desktop Controller v1.3
- * Human-Crafted Linear / Raycast Style Workspace Controller
+ * TITAN Desktop Controller v1.4
+ * Sovereign Enterprise AI & Autonomous Operations Core
  */
 
 let isListening = false;
 let autoSpeak = true;
 let activeModel = "llama3.2:3b";
-
 let currentAgentMode = "orchestrator";
+
+// ==========================================================================
+// HERO PAGE & LAUNCH CONTROLLER
+// ==========================================================================
+function launchMainAgent(target = "chat") {
+  const hero = document.getElementById("heroScreen");
+  if (hero) {
+    hero.classList.add("hidden");
+  }
+
+  if (target === "business") {
+    switchView("tab-business");
+  } else if (target === "artifacts") {
+    switchView("tab-chat");
+    promptLovableApp();
+  } else if (target === "voice") {
+    switchView("tab-chat");
+    toggleMic();
+  } else {
+    switchView("tab-chat");
+  }
+
+  // Welcome announcement
+  if (window.pywebview && window.pywebview.api && window.pywebview.api.test_voice_synthesis) {
+    // Optional greeting
+  }
+}
+
+function returnToHero() {
+  const hero = document.getElementById("heroScreen");
+  if (hero) {
+    hero.classList.remove("hidden");
+  }
+}
 
 // --- Tab / View Switching ---
 function switchView(tabId) {

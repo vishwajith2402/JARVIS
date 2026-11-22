@@ -11,16 +11,96 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body class="dark-theme">
+  <!-- ==================== HERO LANDING PAGE ==================== -->
+  <div class="hero-screen" id="heroScreen">
+    <!-- Top Frameless Drag Bar for Hero Screen -->
+    <div class="hero-titlebar pywebview-drag-region">
+      <div class="hero-brand-tag">
+        <span class="status-orb active"></span>
+        <span>TITAN CORE v1.4</span>
+      </div>
+      <div class="window-controls">
+        <button class="win-btn minimize" onclick="minimizeWindow()" title="Minimize">
+          <svg viewBox="0 0 12 12"><rect width="10" height="1.2" x="1" y="6" fill="currentColor"/></svg>
+        </button>
+        <button class="win-btn maximize" onclick="maximizeWindow()" title="Maximize / Restore">
+          <svg viewBox="0 0 12 12"><rect width="8.5" height="8.5" x="1.75" y="1.75" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+        </button>
+        <button class="win-btn close" onclick="closeWindow()" title="Close">
+          <svg viewBox="0 0 12 12"><path fill="currentColor" d="M2.22 1.16L6 4.94l3.78-3.78.84.84L6.84 5.78 10.62 9.56l-.84.84L6 6.62l-3.78 3.78-.84-.84L5.16 5.78 1.38 2z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Center Hero Content -->
+    <div class="hero-content">
+      <!-- Animated Holographic Core Logo -->
+      <div class="hero-logo-wrapper">
+        <div class="hero-ring ring-outer"></div>
+        <div class="hero-ring ring-middle"></div>
+        <div class="hero-ring ring-inner"></div>
+        <div class="hero-core-glow"></div>
+        <div class="hero-core-center">⚡</div>
+      </div>
+
+      <!-- Title & Branding -->
+      <h1 class="hero-title">T.I.T.A.N.</h1>
+      <p class="hero-subtitle">Tactical Intelligent Thought & Automation Network</p>
+      <p class="hero-desc">Autonomous Desktop Copilot & Sovereign Enterprise Operating System</p>
+
+      <!-- System Telemetry Highlights -->
+      <div class="hero-badge-row">
+        <span class="hero-badge"><span class="badge-dot"></span> NVIDIA RTX 3050</span>
+        <span class="hero-badge">100% Free & Local</span>
+        <span class="hero-badge">Zero Cloud Subscriptions</span>
+        <span class="hero-badge">Autonomous C-Suite</span>
+      </div>
+
+      <!-- Main Action Button -->
+      <div class="hero-btn-container">
+        <button class="hero-cta-btn" id="btnLetsStart" onclick="launchMainAgent()">
+          <span class="btn-glow"></span>
+          <span class="btn-text">Let's Start</span>
+          <svg class="btn-arrow" viewBox="0 0 24 24"><path fill="currentColor" d="M5 13h11.86l-5.43 5.43 1.42 1.42L21.14 12l-8.29-7.85-1.42 1.42L16.86 11H5v2z"/></svg>
+        </button>
+      </div>
+
+      <!-- Feature Highlight Pillars -->
+      <div class="hero-features-grid">
+        <div class="hero-feat-card" onclick="launchMainAgent('chat')">
+          <div class="feat-icon">🖥️</div>
+          <div class="feat-title">Desktop Autopilot</div>
+          <div class="feat-desc">Win32 workspace window snapping & visual screen sense</div>
+        </div>
+        <div class="hero-feat-card" onclick="launchMainAgent('business')">
+          <div class="feat-icon">🏢</div>
+          <div class="feat-title">Autonomous C-Suite</div>
+          <div class="feat-desc">Invoicing, OKR decomposition & B2B CRM sales pipeline</div>
+        </div>
+        <div class="hero-feat-card" onclick="launchMainAgent('artifacts')">
+          <div class="feat-icon">⚡</div>
+          <div class="feat-title">Live Claude Artifacts</div>
+          <div class="feat-desc">Lovable full-stack apps & Figma UI/UX preview</div>
+        </div>
+        <div class="hero-feat-card" onclick="launchMainAgent('voice')">
+          <div class="feat-icon">🎙️</div>
+          <div class="feat-title">Neural Voice Presence</div>
+          <div class="feat-desc">Continuous "Hey Titan" wake word & instant barge-in</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Main Window Container -->
-  <div class="app-shell">
+  <div class="app-shell" id="appShell">
     
     <!-- Custom Frameless Title Bar & Controls -->
     <header class="app-titlebar pywebview-drag-region">
       <div class="titlebar-left">
-        <div class="app-brand">
+        <div class="app-brand" onclick="returnToHero()" title="Click to view Hero Screen" style="cursor:pointer;">
           <div class="status-orb" id="statusOrb"></div>
           <span class="app-name">TITAN</span>
-          <span class="app-version">v1.3</span>
+          <span class="app-version">v1.4</span>
         </div>
 
         <nav class="app-nav">
