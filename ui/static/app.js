@@ -608,8 +608,18 @@ function executeSpotlightAction(actionId) {
   quickAction(actionId);
 }
 
-// Global Spotlight Hotkey (Ctrl+K or Alt+Space or Escape)
+// Global Spotlight Hotkey (Ctrl+K or Alt+Space or Escape) & Hero Screen Launch
 window.addEventListener("keydown", (e) => {
+  // Hero screen Enter / Space launch trigger
+  const hero = document.getElementById("heroScreen");
+  if (hero && !hero.classList.contains("hidden")) {
+    if (e.key === "Enter" || e.code === "Space") {
+      e.preventDefault();
+      launchMainAgent();
+      return;
+    }
+  }
+
   if ((e.ctrlKey && e.key.toLowerCase() === "k") || (e.altKey && (e.code === "Space" || e.key === " "))) {
     e.preventDefault();
     const modal = document.getElementById("spotlightModal");

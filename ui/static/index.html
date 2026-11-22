@@ -11,13 +11,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body class="dark-theme">
-  <!-- ==================== HERO LANDING PAGE ==================== -->
+  <!-- ==================== HUMANLY CRAFTED HERO SCREEN ==================== -->
   <div class="hero-screen" id="heroScreen">
-    <!-- Top Frameless Drag Bar for Hero Screen -->
-    <div class="hero-titlebar pywebview-drag-region">
-      <div class="hero-brand-tag">
-        <span class="status-orb active"></span>
-        <span>TITAN CORE v1.4</span>
+    <!-- Ambient Lighting Effect -->
+    <div class="hero-ambient-beam"></div>
+    <div class="hero-ambient-glow"></div>
+    <div class="hero-grid-bg"></div>
+
+    <!-- Frameless Window Controls -->
+    <div class="hero-topbar pywebview-drag-region">
+      <div class="hero-topbar-left">
+        <div class="hero-status-pill">
+          <span class="hero-live-indicator"></span>
+          <span>SYSTEM READY</span>
+          <span class="pill-divider">/</span>
+          <span class="pill-muted">SOVEREIGN WORKSPACE</span>
+        </div>
       </div>
       <div class="window-controls">
         <button class="win-btn minimize" onclick="minimizeWindow()" title="Minimize">
@@ -32,61 +41,103 @@
       </div>
     </div>
 
-    <!-- Center Hero Content -->
-    <div class="hero-content">
-      <!-- Animated Holographic Core Logo -->
-      <div class="hero-logo-wrapper">
-        <div class="hero-ring ring-outer"></div>
-        <div class="hero-ring ring-middle"></div>
-        <div class="hero-ring ring-inner"></div>
-        <div class="hero-core-glow"></div>
-        <div class="hero-core-center">⚡</div>
+    <!-- Centerpiece Experience -->
+    <div class="hero-stage">
+      
+      <!-- Minimalist Precision Glyph Emblem -->
+      <div class="hero-emblem-container">
+        <div class="hero-emblem-backdrop"></div>
+        <svg class="hero-emblem" viewBox="0 0 48 48" fill="none">
+          <path d="M24 4L42 14V34L24 44L6 34V14L24 4Z" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M24 10L36 17V31L24 38L12 31V17L24 10Z" stroke="url(#emblemGrad)" stroke-width="1.75" stroke-linejoin="round"/>
+          <circle cx="24" cy="24" r="3.5" fill="#6366f1" filter="drop-shadow(0 0 8px #6366f1)"/>
+          <path d="M24 10V20.5M24 27.5V38M12 17L21 22M27 26L36 31M36 17L27 22M21 26L12 31" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+          <defs>
+            <linearGradient id="emblemGrad" x1="12" y1="10" x2="36" y2="38" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#818cf8"/>
+              <stop offset="0.5" stop-color="#38bdf8"/>
+              <stop offset="1" stop-color="#6366f1"/>
+            </linearGradient>
+          </defs>
+        </svg>
       </div>
 
-      <!-- Title & Branding -->
-      <h1 class="hero-title">T.I.T.A.N.</h1>
-      <p class="hero-subtitle">Tactical Intelligent Thought & Automation Network</p>
-      <p class="hero-desc">Autonomous Desktop Copilot & Sovereign Enterprise Operating System</p>
-
-      <!-- System Telemetry Highlights -->
-      <div class="hero-badge-row">
-        <span class="hero-badge"><span class="badge-dot"></span> NVIDIA RTX 3050</span>
-        <span class="hero-badge">100% Free & Local</span>
-        <span class="hero-badge">Zero Cloud Subscriptions</span>
-        <span class="hero-badge">Autonomous C-Suite</span>
+      <!-- Human Crafted Headline & Narrative -->
+      <div class="hero-text-block">
+        <div class="hero-version-badge">
+          <span>TITAN OS</span>
+          <span class="dot-separator">•</span>
+          <span>v1.4 SOVEREIGN</span>
+        </div>
+        
+        <h1 class="hero-main-title">Personal AI, engineered without compromise.</h1>
+        
+        <p class="hero-narrative">
+          A private, autonomous desktop assistant designed for builders. Native window autopilot, executive business operations, and real-time live artifacts—running 100% on your local hardware.
+        </p>
       </div>
 
-      <!-- Main Action Button -->
-      <div class="hero-btn-container">
-        <button class="hero-cta-btn" id="btnLetsStart" onclick="launchMainAgent()">
-          <span class="btn-glow"></span>
-          <span class="btn-text">Let's Start</span>
-          <svg class="btn-arrow" viewBox="0 0 24 24"><path fill="currentColor" d="M5 13h11.86l-5.43 5.43 1.42 1.42L21.14 12l-8.29-7.85-1.42 1.42L16.86 11H5v2z"/></svg>
+      <!-- Human-Crafted Tactile CTA Button -->
+      <div class="hero-action-cluster">
+        <button class="hero-launch-btn" id="btnLetsStart" onclick="launchMainAgent()">
+          <span class="btn-highlight-edge"></span>
+          <span class="btn-inner-content">
+            <span class="btn-spark-icon">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1L9.8 5.6L14.4 7.4L9.8 9.2L8 13.8L6.2 9.2L1.6 7.4L6.2 5.6L8 1Z"/></svg>
+            </span>
+            <span class="btn-main-label">Let's Start</span>
+            <span class="btn-kbd-cue">↵</span>
+          </span>
         </button>
+        <span class="hero-interaction-note">Press <kbd>Enter</kbd> or <kbd>Space</kbd> to launch workspace</span>
       </div>
 
-      <!-- Feature Highlight Pillars -->
-      <div class="hero-features-grid">
-        <div class="hero-feat-card" onclick="launchMainAgent('chat')">
-          <div class="feat-icon">🖥️</div>
-          <div class="feat-title">Desktop Autopilot</div>
-          <div class="feat-desc">Win32 workspace window snapping & visual screen sense</div>
+      <!-- Refined Capabilities Deck -->
+      <div class="hero-capabilities-deck">
+        <div class="deck-item" onclick="launchMainAgent('chat')">
+          <div class="deck-index">01</div>
+          <div class="deck-meta">
+            <span class="deck-name">Desktop Autopilot</span>
+            <span class="deck-desc">Win32 window snapping, screen vision & process management</span>
+          </div>
+          <svg class="deck-arrow" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M6 3L11 8L6 13"/></svg>
         </div>
-        <div class="hero-feat-card" onclick="launchMainAgent('business')">
-          <div class="feat-icon">🏢</div>
-          <div class="feat-title">Autonomous C-Suite</div>
-          <div class="feat-desc">Invoicing, OKR decomposition & B2B CRM sales pipeline</div>
+
+        <div class="deck-item" onclick="launchMainAgent('business')">
+          <div class="deck-index">02</div>
+          <div class="deck-meta">
+            <span class="deck-name">Autonomous C-Suite</span>
+            <span class="deck-desc">Strategic OKR decomposition, CRM pipeline & invoice ledger</span>
+          </div>
+          <svg class="deck-arrow" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M6 3L11 8L6 13"/></svg>
         </div>
-        <div class="hero-feat-card" onclick="launchMainAgent('artifacts')">
-          <div class="feat-icon">⚡</div>
-          <div class="feat-title">Live Claude Artifacts</div>
-          <div class="feat-desc">Lovable full-stack apps & Figma UI/UX preview</div>
+
+        <div class="deck-item" onclick="launchMainAgent('artifacts')">
+          <div class="deck-index">03</div>
+          <div class="deck-meta">
+            <span class="deck-name">Live Generative Artifacts</span>
+            <span class="deck-desc">Interactive web tools, Lovable apps & Figma design specs</span>
+          </div>
+          <svg class="deck-arrow" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M6 3L11 8L6 13"/></svg>
         </div>
-        <div class="hero-feat-card" onclick="launchMainAgent('voice')">
-          <div class="feat-icon">🎙️</div>
-          <div class="feat-title">Neural Voice Presence</div>
-          <div class="feat-desc">Continuous "Hey Titan" wake word & instant barge-in</div>
-        </div>
+      </div>
+
+    </div>
+
+    <!-- Human-Crafted Minimal Spec Bar -->
+    <div class="hero-foot-bar">
+      <div class="spec-cluster">
+        <span>HP VICTUS 15</span>
+        <span class="foot-sep">/</span>
+        <span>RYZEN 5 (12T)</span>
+        <span class="foot-sep">/</span>
+        <span>RTX 3050 4GB VRAM</span>
+        <span class="foot-sep">/</span>
+        <span>LOCAL RUNTIME</span>
+      </div>
+      <div class="privacy-note">
+        <span class="shield-icon"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1L2 3.5V7.5C2 11.2 4.6 14.6 8 15.5C11.4 14.6 14 11.2 14 7.5V3.5L8 1Z"/></svg></span>
+        <span>100% PRIVATE • ZERO DATA EXFILTRATION</span>
       </div>
     </div>
   </div>
