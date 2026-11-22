@@ -219,6 +219,42 @@
             </div>
           </div>
         </main>
+
+        <!-- Claude & Lovable Live Interactive Artifacts Panel -->
+        <aside class="artifacts-panel" id="artifactsPanel">
+          <div class="artifacts-header">
+            <div class="artifacts-title-area">
+              <span class="artifacts-icon">⚡</span>
+              <div>
+                <div class="artifacts-title" id="artifactTitle">Live Interactive Artifact</div>
+                <div class="artifacts-sub" id="artifactSubtitle">HTML / Full-Stack Preview</div>
+              </div>
+            </div>
+            
+            <div class="artifacts-actions">
+              <div class="tab-toggle-pill">
+                <button class="pill-btn active" id="btnArtifactPreview" onclick="toggleArtifactTab('preview')">Preview</button>
+                <button class="pill-btn" id="btnArtifactCode" onclick="toggleArtifactTab('code')">Code</button>
+              </div>
+              <button class="icon-btn-sm" onclick="openArtifactInBrowser()" title="Open in Chrome">
+                <svg viewBox="0 0 24 24"><path fill="currentColor" d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+              </button>
+              <button class="icon-btn-sm" onclick="closeArtifactPanel()" title="Close Artifacts">
+                <svg viewBox="0 0 12 12"><path fill="currentColor" d="M2.22 1.16L6 4.94l3.78-3.78.84.84L6.84 5.78 10.62 9.56l-.84.84L6 6.62l-3.78 3.78-.84-.84L5.16 5.78 1.38 2z"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Preview Frame -->
+          <div class="artifacts-body" id="artifactPreviewArea">
+            <iframe id="artifactIframe" sandbox="allow-scripts allow-modals allow-forms"></iframe>
+          </div>
+
+          <!-- Code View -->
+          <div class="artifacts-body hidden" id="artifactCodeArea">
+            <pre class="artifact-code-pre"><code id="artifactCodePre"></code></pre>
+          </div>
+        </aside>
       </section>
 
       <!-- ==================== VIEW 2: NEURAL MODELS ==================== -->

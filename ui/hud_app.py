@@ -227,6 +227,21 @@ class JarvisApiBridge:
         from automation.business_engine import business_engine
         return business_engine.generate_marketing_content(content_type, topic, audience)
 
+    # =========================================================================
+    # CLAUDE / LOVABLE / FIGMA / PERPLEXITY OMNISCIENCE API
+    # =========================================================================
+    def generate_lovable_app(self, prompt: str, app_type: str = "interactive_tool") -> Dict[str, Any]:
+        from automation.omniscience_engine import omniscience_engine
+        return omniscience_engine.generate_lovable_app(prompt, app_type)
+
+    def generate_figma_design(self, component_name: str, style_theme: str = "futuristic_glass") -> Dict[str, Any]:
+        from automation.omniscience_engine import omniscience_engine
+        return omniscience_engine.generate_figma_design(component_name, style_theme)
+
+    def perplexity_search(self, query: str) -> Dict[str, Any]:
+        from automation.omniscience_engine import omniscience_engine
+        return omniscience_engine.perplexity_search(query)
+
 
 def run_hud():
     """Launch the HUD desktop window."""

@@ -443,6 +443,9 @@ const SPOTLIGHT_ACTIONS = [
   { id: "scan_projects", icon: "📂", title: "Inspect Repositories", desc: "Autonomous scanning of local git projects", tag: "Projects" },
   { id: "screen_capture", icon: "👁️", title: "Vision Screen Debugger", desc: "Inspect display, diagnose visual bugs & errors", tag: "Vision" },
   { id: "toggle_voice_daemon", icon: "🎙️", title: "Toggle Hands-Free Voice", desc: "Enable/disable continuous 'Hey Titan' wake word", tag: "Voice" },
+  { id: "lovable_app", icon: "🚀", title: "Build Generative Web App", desc: "Lovable/v0 style interactive app with live Artifacts preview", tag: "Lovable" },
+  { id: "figma_design", icon: "🎨", title: "Generate UI/UX Component", desc: "Figma design system tokens & visual vector layout", tag: "Figma" },
+  { id: "perplexity_search", icon: "🌐", title: "Perplexity Verified Search", desc: "Live multi-source synthesis with numbered citations", tag: "Perplexity" },
   { id: "deep_research", icon: "🔍", title: "Deep Web Research", desc: "Multi-site autonomous research & synthesis", tag: "Web" },
   { id: "open_business", icon: "🏢", title: "Autonomous Business Hub", desc: "Access Invoicing, CRM pipeline & OKR milestones", tag: "Business" },
   { id: "biz_invoice", icon: "🧾", title: "Issue Client Invoice", desc: "Create professional HTML invoice and log to ledger", tag: "Finance" },
@@ -536,6 +539,15 @@ function executeSpotlightAction(actionId) {
 
   if (actionId === "open_profile") {
     switchView("tab-profile");
+    return;
+  } else if (actionId === "lovable_app") {
+    promptLovableApp();
+    return;
+  } else if (actionId === "figma_design") {
+    promptFigmaDesign();
+    return;
+  } else if (actionId === "perplexity_search") {
+    promptPerplexitySearch();
     return;
   } else if (actionId === "open_business") {
     switchView("tab-business");
@@ -737,5 +749,105 @@ async function promptMarketingCampaign() {
     const res = await window.pywebview.api.create_marketing_campaign("social_thread", topic);
     switchView("tab-chat");
     appendMessage("TITAN", `Generated High-Conversion Marketing Thread for '${topic}':\n\n${res.content}`, "assistant");
+  }
+}
+
+// ==========================================================================
+// CLAUDE & LOVABLE STYLE LIVE ARTIFACTS INTERFACE
+// ==========================================================================
+let currentArtifactFilePath = "";
+
+function displayArtifact(title, subtitle, htmlCode, filePath = "") {
+  const panel = document.getElementById("artifactsPanel");
+  const tEl = document.getElementById("artifactTitle");
+  const subEl = document.getElementById("artifactSubtitle");
+  const iframe = document.getElementById("artifactIframe");
+  const codePre = document.getElementById("artifactCodePre");
+
+  if (!panel) return;
+
+  currentArtifactFilePath = filePath;
+  if (tEl) tEl.textContent = title || "Live Interactive Artifact";
+  if (subEl) subEl.textContent = subtitle || "HTML / Full-Stack Preview";
+  if (iframe) iframe.srcdoc = htmlCode;
+  if (codePre) codePre.textContent = htmlCode;
+
+  toggleArtifactTab("preview");
+  panel.classList.add("active");
+}
+
+function toggleArtifactTab(tab) {
+  const btnPrev = document.getElementById("btnArtifactPreview");
+  const btnCode = document.getElementById("btnArtifactCode");
+  const prevArea = document.getElementById("artifactPreviewArea");
+  const codeArea = document.getElementById("artifactCodeArea");
+
+  if (tab === "preview") {
+    if (btnPrev) btnPrev.classList.add("active");
+    if (btnCode) btnCode.classList.remove("active");
+    if (prevArea) prevArea.classList.remove("hidden");
+    if (codeArea) codeArea.classList.add("hidden");
+  } else {
+    if (btnPrev) btnPrev.classList.remove("active");
+    if (btnCode) btnCode.classList.add("active");
+    if (prevArea) prevArea.classList.add("hidden");
+    if (codeArea) codeArea.classList.remove("hidden");
+  }
+}
+
+function closeArtifactPanel() {
+  const panel = document.getElementById("artifactsPanel");
+  if (panel) panel.classList.remove("active");
+}
+
+function openArtifactInBrowser() {
+  if (currentArtifactFilePath && window.pywebview && window.pywebview.api && window.pywebview.api.open_url) {
+    window.pywebview.api.open_url(currentArtifactFilePath);
+  } else if (currentArtifactFilePath) {
+    window.open("file:///" + currentArtifactFilePath.replace(/\\/g, "/"), "_blank");
+  }
+}
+
+async function promptLovableApp() {
+  const req = prompt("What interactive app would you like TITAN to build? (e.g. 'Pomodoro timer with sound', 'SaaS Pricing calculator', 'Retro Snake arcade game'):", "Pomodoro Focus Timer");
+  if (!req) return;
+
+  setOrbStatus("Generating Lovable full-stack application...", true);
+  if (window.pywebview && window.pywebview.api && window.pywebview.api.generate_lovable_app) {
+    const res = await window.pywebview.api.generate_lovable_app(req);
+    setOrbStatus("TITAN is ready.", false);
+    if (res.success) {
+      displayArtifact(res.title, "Lovable / v0 Interactive Web Application", res.html_code, res.file_path);
+      appendMessage("TITAN", `Generated and opened interactive app: **${res.title}** in the live Artifacts pane, Sir.`, "assistant");
+    }
+  }
+}
+
+async function promptFigmaDesign() {
+  const comp = prompt("What UI/UX component would you like to design? (e.g. 'Biometric Login Card', 'Dark Mode Analytics Widget', 'Apple Style Audio Player'):", "Biometric Authentication Card");
+  if (!comp) return;
+
+  setOrbStatus("Generating Figma design system & vector spec...", true);
+  if (window.pywebview && window.pywebview.api && window.pywebview.api.generate_figma_design) {
+    const res = await window.pywebview.api.generate_figma_design(comp);
+    setOrbStatus("TITAN is ready.", false);
+    if (res.success) {
+      displayArtifact(res.component_name, "Figma Design Tokens & Visual Layout", res.html_code, res.file_path);
+      appendMessage("TITAN", `Created Figma design tokens and component visual canvas for **${res.component_name}** in Artifacts, Sir.`, "assistant");
+    }
+  }
+}
+
+async function promptPerplexitySearch() {
+  const q = prompt("What topic would you like to research with live citations? (Perplexity mode):", "Latest developments in open source local AI models 2026");
+  if (!q) return;
+
+  setOrbStatus("Synthesizing multi-source intelligence...", true);
+  if (window.pywebview && window.pywebview.api && window.pywebview.api.perplexity_search) {
+    const res = await window.pywebview.api.perplexity_search(q);
+    setOrbStatus("TITAN is ready.", false);
+    if (res.success) {
+      appendMessage("TITAN", res.answer_with_citations, "assistant");
+    }
   }
 }

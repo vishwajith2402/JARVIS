@@ -541,6 +541,50 @@ class HermesToolParser:
                     "required": ["content_type", "topic"]
                 }
             }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "generate_lovable_app",
+                "description": "Create a complete, single-file interactive full-stack web application (dashboard, calculator, game, interactive tool) and render live in Claude/Lovable Artifacts viewer.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "prompt": {"type": "string", "description": "The exact application or tool requirement to generate."},
+                        "app_type": {"type": "string", "description": "Type of app (interactive_tool, calculator, game, dashboard)."}
+                    },
+                    "required": ["prompt"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "generate_figma_design",
+                "description": "Generate production-grade visual UI/UX design tokens, typography, and visual SVG/CSS component layouts matching modern Figma systems.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "component_name": {"type": "string", "description": "Name or purpose of the UI component to design."},
+                        "style_theme": {"type": "string", "description": "Visual style (futuristic_glass, minimal_apple, modern_saas)."}
+                    },
+                    "required": ["component_name"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "perplexity_search",
+                "description": "Execute deep live web research and return a synthesized response with Perplexity-style numbered source citations [1], [2].",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "query": {"type": "string", "description": "Search query or research question."}
+                    },
+                    "required": ["query"]
+                }
+            }
         }
     ]
 

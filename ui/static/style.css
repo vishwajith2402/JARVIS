@@ -1346,6 +1346,190 @@ body.dark-theme {
 .fact-input { flex: 1; }
 
 /* ==========================================================================
+   CLAUDE & LOVABLE STYLE LIVE INTERACTIVE ARTIFACTS PANEL
+   ========================================================================== */
+.artifacts-panel {
+  display: none;
+  width: 500px;
+  max-width: 50vw;
+  background: var(--bg-surface);
+  border-left: 1px solid var(--border-subtle);
+  flex-direction: column;
+  height: 100%;
+  animation: slideInRight 0.25s var(--ease-spring);
+  z-index: 10;
+}
+
+.artifacts-panel.active {
+  display: flex;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.artifacts-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.artifacts-title-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.artifacts-icon {
+  font-size: 18px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(99, 102, 241, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #818cf8;
+}
+
+.artifacts-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.artifacts-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.artifacts-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab-toggle-pill {
+  display: flex;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.pill-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 11.5px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.pill-btn.active {
+  background: var(--brand-primary);
+  color: #fff;
+}
+
+.icon-btn-sm {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.icon-btn-sm svg {
+  width: 14px;
+  height: 14px;
+}
+
+.icon-btn-sm:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.artifacts-body {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: #030712;
+}
+
+.artifacts-body.hidden {
+  display: none;
+}
+
+#artifactIframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+}
+
+.artifact-code-pre {
+  margin: 0;
+  padding: 16px;
+  height: 100%;
+  overflow: auto;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  color: #e5e7eb;
+}
+
+/* Perplexity Cited Source Cards */
+.perplexity-sources-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 8px 0 14px;
+}
+
+.perplexity-source-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11.5px;
+  color: #c7d2fe;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.perplexity-source-chip:hover {
+  background: rgba(99, 102, 241, 0.25);
+  border-color: #818cf8;
+}
+
+.source-idx {
+  background: var(--brand-primary);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 3px;
+  padding: 1px 4px;
+  font-family: var(--font-mono);
+}
+
+/* ==========================================================================
    ENTERPRISE BUSINESS OPERATIONS HUB STYLES
    ========================================================================== */
 .business-kpi-grid {
@@ -1465,3 +1649,187 @@ body.dark-theme {
   font-size: 11px;
 }
 .fact-input { flex: 1; }
+
+/* ==========================================================================
+   CLAUDE & LOVABLE STYLE LIVE INTERACTIVE ARTIFACTS PANEL
+   ========================================================================== */
+.artifacts-panel {
+  display: none;
+  width: 500px;
+  max-width: 50vw;
+  background: var(--bg-surface);
+  border-left: 1px solid var(--border-subtle);
+  flex-direction: column;
+  height: 100%;
+  animation: slideInRight 0.25s var(--ease-spring);
+  z-index: 10;
+}
+
+.artifacts-panel.active {
+  display: flex;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.artifacts-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.artifacts-title-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.artifacts-icon {
+  font-size: 18px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(99, 102, 241, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #818cf8;
+}
+
+.artifacts-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.artifacts-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.artifacts-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab-toggle-pill {
+  display: flex;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.pill-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 11.5px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.pill-btn.active {
+  background: var(--brand-primary);
+  color: #fff;
+}
+
+.icon-btn-sm {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.icon-btn-sm svg {
+  width: 14px;
+  height: 14px;
+}
+
+.icon-btn-sm:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.artifacts-body {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: #030712;
+}
+
+.artifacts-body.hidden {
+  display: none;
+}
+
+#artifactIframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+}
+
+.artifact-code-pre {
+  margin: 0;
+  padding: 16px;
+  height: 100%;
+  overflow: auto;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  color: #e5e7eb;
+}
+
+/* Perplexity Cited Source Cards */
+.perplexity-sources-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 8px 0 14px;
+}
+
+.perplexity-source-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11.5px;
+  color: #c7d2fe;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.perplexity-source-chip:hover {
+  background: rgba(99, 102, 241, 0.25);
+  border-color: #818cf8;
+}
+
+.source-idx {
+  background: var(--brand-primary);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 3px;
+  padding: 1px 4px;
+  font-family: var(--font-mono);
+}

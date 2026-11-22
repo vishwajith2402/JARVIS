@@ -56,6 +56,9 @@ class PermissionManager:
             "get_business_summary": PermissionLevel.LEVEL_1_AUTO,
             "analyze_competitors": PermissionLevel.LEVEL_1_AUTO,
             "generate_marketing_content": PermissionLevel.LEVEL_1_AUTO,
+            "generate_lovable_app": PermissionLevel.LEVEL_1_AUTO,
+            "generate_figma_design": PermissionLevel.LEVEL_1_AUTO,
+            "perplexity_search": PermissionLevel.LEVEL_1_AUTO,
 
             # Level 2
             "create_new_skill": PermissionLevel.LEVEL_2_CONFIRM,

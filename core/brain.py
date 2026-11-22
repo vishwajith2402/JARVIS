@@ -355,6 +355,23 @@ class UniversalAgentBrain:
                 aud = args.get("target_audience", "Founders & Engineers")
                 return business_engine.generate_marketing_content(ct, top, aud)
 
+            elif tool_name == "generate_lovable_app":
+                from automation.omniscience_engine import omniscience_engine
+                p = args.get("prompt", "")
+                t = args.get("app_type", "interactive_tool")
+                return omniscience_engine.generate_lovable_app(p, t)
+
+            elif tool_name == "generate_figma_design":
+                from automation.omniscience_engine import omniscience_engine
+                cn = args.get("component_name", "Dashboard Card")
+                st = args.get("style_theme", "futuristic_glass")
+                return omniscience_engine.generate_figma_design(cn, st)
+
+            elif tool_name == "perplexity_search":
+                from automation.omniscience_engine import omniscience_engine
+                q = args.get("query", "")
+                return omniscience_engine.perplexity_search(q)
+
             elif tool_name == "web_download":
                 from automation.web_agent import web_agent
                 return web_agent.download_file(args.get("url", ""), args.get("filename"))
