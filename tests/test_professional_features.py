@@ -98,7 +98,29 @@ class TestProfessionalFeatures(unittest.TestCase):
         res_doc = brain.execute_tool("analyze_document", {"file_path": "README.md", "question": "What is TITAN?"})
         self.assertTrue(res_doc.get("success", False))
 
-        print("  [PASS] Universal Agent Brain Tool Dispatch for all 7 features verified")
+        # 4. Top MNC Executive Profile tool
+        res_prof = brain.execute_tool("manage_profile", {"action": "get"})
+        self.assertTrue(res_prof.get("success", False))
+        self.assertEqual(res_prof["profile"].get("user_name"), "Vishwajith")
+
+        # 5. Top MNC Knowledge Fact memory tool
+        res_fact = brain.execute_tool("remember_fact", {
+            "category": "architecture",
+            "subject": "backend",
+            "fact": "Use FastAPI and Python 3.12 for async microservices"
+        })
+        self.assertTrue(res_fact.get("success", False))
+
+        # 6. Recall fact
+        res_recall = brain.execute_tool("recall_facts", {"query": "FastAPI"})
+        self.assertTrue(res_recall.get("success", False))
+        self.assertTrue(len(res_recall.get("facts", [])) > 0)
+
+        # 7. Workspace Window Autopilot tool
+        res_tile = brain.execute_tool("arrange_workspace", {"left_app": "code", "right_app": "chrome"})
+        self.assertIn("success", res_tile)
+
+        print("  [PASS] Top MNC Executive Memory, Profile & Window Autopilot tools verified")
 
 
 if __name__ == "__main__":

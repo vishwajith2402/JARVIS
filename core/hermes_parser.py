@@ -390,6 +390,51 @@ class HermesToolParser:
                     "required": ["query"]
                 }
             }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "manage_profile",
+                "description": "View or update executive user profile (name, title, preferred stacks, IDE, work style).",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "action": {"type": "string", "enum": ["get", "update"], "description": "Action type."},
+                        "updates": {"type": "object", "description": "Dictionary of fields to update if action is update."}
+                    },
+                    "required": ["action"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "remember_fact",
+                "description": "Store a permanent knowledge fact about the user, preference, project, or instruction.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "category": {"type": "string", "description": "Category (e.g. 'preference', 'tech', 'project', 'instruction')."},
+                        "subject": {"type": "string", "description": "Topic or entity (e.g. 'database', 'frontend', 'schedule')."},
+                        "fact": {"type": "string", "description": "The exact fact or rule to remember."}
+                    },
+                    "required": ["category", "subject", "fact"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "recall_facts",
+                "description": "Search and retrieve stored knowledge facts and rules from long-term memory.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "query": {"type": "string", "description": "Optional search query to filter facts."}
+                    },
+                    "required": []
+                }
+            }
         }
     ]
 

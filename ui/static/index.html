@@ -36,6 +36,10 @@
             <svg class="icon" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
             <span>Deep Research</span>
           </button>
+          <button class="nav-btn" data-tab="tab-profile" onclick="switchView('tab-profile')">
+            <svg class="icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            <span>Executive Profile</span>
+          </button>
           <button class="nav-btn" data-tab="tab-settings" onclick="switchView('tab-settings')">
             <svg class="icon" viewBox="0 0 24 24"><path fill="currentColor" d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
             <span>Settings</span>
@@ -55,6 +59,10 @@
             <span class="chip-label">Model</span>
             <span class="chip-val active" id="activeModelVal">Llama 3.2</span>
           </div>
+          <button class="spotlight-trigger-btn" onclick="openSpotlight()" title="Spotlight Command Palette (Ctrl+K)">
+            <svg class="icon-sm" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <span class="spotlight-kbd-tag">Ctrl+K</span>
+          </button>
         </div>
 
         <!-- Window Controls -->
@@ -152,6 +160,16 @@
               <div class="orb-layer layer-2"></div>
               <div class="orb-core"></div>
             </div>
+            
+            <!-- Dynamic 5-bar Waveform Audio Visualizer (Siri / Copilot style) -->
+            <div class="waveform-visualizer" id="waveformViz">
+              <div class="wave-bar bar-1"></div>
+              <div class="wave-bar bar-2"></div>
+              <div class="wave-bar bar-3"></div>
+              <div class="wave-bar bar-4"></div>
+              <div class="wave-bar bar-5"></div>
+            </div>
+
             <div class="orb-status" id="orbStatus">TITAN is ready. Type or speak your command.</div>
           </div>
 
@@ -284,6 +302,72 @@
         </div>
       </section>
 
+      <!-- ==================== VIEW 5: EXECUTIVE PROFILE & MEMORY ==================== -->
+      <section class="view-panel" id="tab-profile">
+        <div class="panel-container">
+          <div class="panel-header">
+            <h2>Executive Profile & Memory</h2>
+            <p>Your personal developer profile, active tech stacks, and permanent knowledge facts retained across sessions.</p>
+          </div>
+
+          <div class="profile-grid">
+            <!-- Left Card: Principal Profile -->
+            <div class="profile-card">
+              <div class="profile-card-header">
+                <div class="profile-avatar">👨‍💻</div>
+                <div>
+                  <h3 id="profUserName">Vishwajith</h3>
+                  <span class="profile-role" id="profUserRole">Lead Software Engineer & AI Architect</span>
+                </div>
+              </div>
+
+              <div class="profile-fields mt-3">
+                <div class="field-row">
+                  <span class="f-label">Address As</span>
+                  <input type="text" class="input-field-sm" id="profUserTitle" value="Sir">
+                </div>
+                <div class="field-row mt-2">
+                  <span class="f-label">Primary Languages</span>
+                  <input type="text" class="input-field-sm" id="profLanguages" value="Python, JavaScript, PowerShell">
+                </div>
+                <div class="field-row mt-2">
+                  <span class="f-label">Primary IDE</span>
+                  <input type="text" class="input-field-sm" id="profIde" value="Visual Studio Code">
+                </div>
+                <div class="field-row mt-2">
+                  <span class="f-label">Workstation</span>
+                  <span class="f-val">HP Victus 15 (RTX 3050, Ryzen 5)</span>
+                </div>
+              </div>
+
+              <div class="profile-actions mt-3">
+                <button class="btn primary btn-sm" onclick="saveProfileChanges()">Update Profile</button>
+              </div>
+            </div>
+
+            <!-- Right Card: Stored Knowledge Facts -->
+            <div class="facts-card">
+              <div class="facts-header">
+                <h3>Remembered Knowledge & Rules</h3>
+                <span class="badge active" id="factCountBadge">Active Facts</span>
+              </div>
+              <p class="desc">Permanent context facts that TITAN automatically loads into its reasoning engine.</p>
+              
+              <div class="facts-list" id="factsListContainer">
+                <div class="fact-item loading">Loading executive memory...</div>
+              </div>
+
+              <div class="add-fact-row mt-3">
+                <input type="text" id="newFactCategory" class="input-field-sm cat-input" placeholder="Category (e.g. preference)">
+                <input type="text" id="newFactSubject" class="input-field-sm subj-input" placeholder="Subject">
+                <input type="text" id="newFactText" class="input-field-sm fact-input" placeholder="Fact / Instruction">
+                <button class="btn secondary btn-sm" onclick="addNewFact()">+ Remember</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- ==================== VIEW 4: SETTINGS ==================== -->
       <section class="view-panel" id="tab-settings">
         <div class="panel-container">
@@ -321,6 +405,25 @@
         </div>
       </section>
 
+    </div>
+  </div>
+
+  <!-- Executive Spotlight Command Palette Modal (Ctrl+K or Alt+Space) -->
+  <div class="spotlight-overlay" id="spotlightModal" onclick="closeSpotlight(event)">
+    <div class="spotlight-dialog" onclick="event.stopPropagation()">
+      <div class="spotlight-input-row">
+        <svg class="spotlight-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" id="spotlightInput" placeholder="Type a command or tool (e.g. 'briefing', 'tile windows', 'voice', 'code')..." oninput="filterSpotlight()" onkeydown="handleSpotlightKey(event)">
+        <span class="spotlight-kbd" onclick="closeSpotlight()">ESC</span>
+      </div>
+      <div class="spotlight-list" id="spotlightList">
+        <!-- Dynamically rendered or static items -->
+      </div>
+      <div class="spotlight-footer">
+        <span>Use <strong>↑</strong> <strong>↓</strong> to navigate</span>
+        <span>Press <strong>↵</strong> to execute</span>
+        <span><strong>ESC</strong> to close</span>
+      </div>
     </div>
   </div>
 

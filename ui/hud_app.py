@@ -139,6 +139,15 @@ class JarvisApiBridge:
                 speaker.speak(msg)
             return msg
 
+        elif action_type == "arrange_workspace":
+            res = app_controller.arrange_workspace_windows("code", "chrome")
+            return res.get("message", "Tiled workspace windows side-by-side, Sir.")
+
+        elif action_type == "quick_clean":
+            from automation.routines import routines
+            res = routines.execute_routine("quick_clean")
+            return res.get("message", "Quick clean routine completed, Sir.")
+
         elif action_type == "check_updates":
             res = updater.check_git_updates()
             if res.get("has_update"):
@@ -147,7 +156,41 @@ class JarvisApiBridge:
                 return f"Update status: {res.get('error')}"
             return "All JARVIS subsystems and features are running the latest version, Sir."
 
+        elif action_type == "toggle_voice_daemon":
+            from voice.voice_daemon import voice_daemon
+            if voice_daemon.is_running:
+                voice_daemon.stop()
+                return "Hands-free voice daemon stopped, Sir."
+            else:
+                voice_daemon.start()
+                return "Hands-free voice daemon started. Say 'Hey Titan' anytime, Sir."
+
         return f"Unknown quick action: {action_type}"
+
+    def get_executive_profile(self) -> Dict[str, Any]:
+        from core.profile_manager import executive_profile
+        return executive_profile.get_profile()
+
+    def update_executive_profile(self, updates: Dict[str, Any]) -> Dict[str, Any]:
+        from core.profile_manager import executive_profile
+        return executive_profile.update_profile(updates)
+
+    def get_executive_facts(self) -> List[Dict[str, Any]]:
+        from core.profile_manager import executive_profile
+        return executive_profile.recall_facts()
+
+    def save_executive_fact(self, category: str, subject: str, fact: str) -> Dict[str, Any]:
+        from core.profile_manager import executive_profile
+        return executive_profile.remember_fact(category, subject, fact)
+
+    def toggle_handsfree_voice(self) -> Dict[str, Any]:
+        from voice.voice_daemon import voice_daemon
+        if voice_daemon.is_running:
+            voice_daemon.stop()
+            return {"success": True, "active": False, "message": "Hands-free voice daemon suspended, Sir."}
+        else:
+            voice_daemon.start()
+            return {"success": True, "active": True, "message": "Hands-free voice daemon active. Listening for 'Hey Titan', Sir."}
 
 
 def run_hud():

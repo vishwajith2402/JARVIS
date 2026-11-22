@@ -46,6 +46,9 @@ class PermissionManager:
             "generate_code": PermissionLevel.LEVEL_1_AUTO,
             "arrange_workspace": PermissionLevel.LEVEL_1_AUTO,
             "deep_web_research": PermissionLevel.LEVEL_1_AUTO,
+            "manage_profile": PermissionLevel.LEVEL_1_AUTO,
+            "remember_fact": PermissionLevel.LEVEL_1_AUTO,
+            "recall_facts": PermissionLevel.LEVEL_1_AUTO,
 
             # Level 2
             "create_new_skill": PermissionLevel.LEVEL_2_CONFIRM,

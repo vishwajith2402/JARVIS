@@ -17,6 +17,9 @@ function switchView(tabId) {
   document.querySelectorAll(".view-panel").forEach(panel => {
     panel.classList.toggle("active", panel.id === tabId);
   });
+  if (tabId === "tab-profile") {
+    loadExecutiveProfile();
+  }
 }
 
 // --- OpenJarvis Agent Mode Selection ---
@@ -150,6 +153,13 @@ function removeThinkingMessage(id) {
   if (el) el.remove();
 }
 
+function setWaveformActive(active) {
+  const viz = document.getElementById("waveformViz");
+  if (viz) {
+    viz.classList.toggle("active", active);
+  }
+}
+
 async function sendMessage() {
   const input = document.getElementById("userInput");
   const text = input.value.trim();
@@ -161,6 +171,7 @@ async function sendMessage() {
   const thinkingId = "thinking-" + Date.now();
   appendThinkingMessage(thinkingId);
   setOrbStatus("TITAN is reasoning...", true);
+  setWaveformActive(true);
 
   try {
     if (window.pywebview && window.pywebview.api) {
@@ -177,6 +188,7 @@ async function sendMessage() {
     removeThinkingMessage(thinkingId);
     appendMessage("TITAN", "Communication error: " + err, "assistant");
   } finally {
+    setWaveformActive(false);
     setOrbStatus("TITAN is ready. Type or speak your command.", false);
   }
 }
@@ -204,6 +216,7 @@ async function toggleMic() {
     if (btn) btn.classList.add("active");
     if (orb) orb.classList.add("listening");
     setOrbStatus("Listening to your voice...", true);
+    setWaveformActive(true);
 
     try {
       if (window.pywebview && window.pywebview.api) {
@@ -221,6 +234,7 @@ async function toggleMic() {
       isListening = false;
       if (btn) btn.classList.remove("active");
       if (orb) orb.classList.remove("listening");
+      setWaveformActive(false);
       setOrbStatus("TITAN is ready. Type or speak your command.", false);
     }
   }
@@ -326,4 +340,219 @@ async function updateTelemetry() {
 setInterval(updateTelemetry, 2500);
 window.addEventListener("pywebviewready", () => {
   updateTelemetry();
+  loadExecutiveProfile();
+});
+
+// ==========================================================================
+// TOP MNC EXECUTIVE PROFILE & KNOWLEDGE GRAPH
+// ==========================================================================
+async function loadExecutiveProfile() {
+  if (!window.pywebview || !window.pywebview.api) return;
+
+  try {
+    if (window.pywebview.api.get_executive_profile) {
+      const prof = await window.pywebview.api.get_executive_profile();
+      if (prof) {
+        document.getElementById("profUserName").textContent = prof.user_name || "Vishwajith";
+        document.getElementById("profUserRole").textContent = prof.role || "Lead Software Engineer";
+        document.getElementById("profUserTitle").value = prof.user_title || "Sir";
+        document.getElementById("profLanguages").value = (prof.preferred_languages || []).join(", ");
+        document.getElementById("profIde").value = prof.primary_ide || "Visual Studio Code";
+      }
+    }
+
+    if (window.pywebview.api.get_executive_facts) {
+      const facts = await window.pywebview.api.get_executive_facts();
+      renderFactsList(facts || []);
+    }
+  } catch (err) {
+    console.error("Failed to load executive profile:", err);
+  }
+}
+
+function renderFactsList(facts) {
+  const container = document.getElementById("factsListContainer");
+  const badge = document.getElementById("factCountBadge");
+  if (!container) return;
+
+  if (badge) badge.textContent = `${facts.length} Active Rules`;
+
+  if (facts.length === 0) {
+    container.innerHTML = `<div class="fact-item" style="color:var(--text-muted); justify-content:center;">No permanent rules stored yet. Add one below!</div>`;
+    return;
+  }
+
+  container.innerHTML = facts.map(f => `
+    <div class="fact-item">
+      <div class="fact-meta">
+        <span class="fact-cat-tag">${f.category || "RULE"}</span>
+        <span class="fact-body"><strong>${f.subject}:</strong> ${f.fact}</span>
+      </div>
+    </div>
+  `).join("");
+}
+
+async function saveProfileChanges() {
+  if (!window.pywebview || !window.pywebview.api || !window.pywebview.api.update_executive_profile) return;
+
+  const title = document.getElementById("profUserTitle").value.trim() || "Sir";
+  const langs = document.getElementById("profLanguages").value.split(",").map(s => s.trim()).filter(Boolean);
+  const ide = document.getElementById("profIde").value.trim() || "Visual Studio Code";
+
+  try {
+    await window.pywebview.api.update_executive_profile({
+      user_title: title,
+      preferred_languages: langs,
+      primary_ide: ide
+    });
+    appendMessage("System", `Executive Profile updated: Title set to '${title}', IDE '${ide}'.`, "assistant");
+  } catch (err) {
+    console.error("Error saving profile:", err);
+  }
+}
+
+async function addNewFact() {
+  if (!window.pywebview || !window.pywebview.api || !window.pywebview.api.save_executive_fact) return;
+
+  const cat = document.getElementById("newFactCategory").value.trim() || "preference";
+  const subj = document.getElementById("newFactSubject").value.trim() || "general";
+  const fact = document.getElementById("newFactText").value.trim();
+  if (!fact) return;
+
+  try {
+    await window.pywebview.api.save_executive_fact(cat, subj, fact);
+    document.getElementById("newFactCategory").value = "";
+    document.getElementById("newFactSubject").value = "";
+    document.getElementById("newFactText").value = "";
+    loadExecutiveProfile();
+    appendMessage("System", `Remembered rule: [${cat}] ${subj} - ${fact}`, "assistant");
+  } catch (err) {
+    console.error("Error adding fact:", err);
+  }
+}
+
+// ==========================================================================
+// SPOTLIGHT COMMAND PALETTE (RAYCAST / APPLE SPOTLIGHT STYLE)
+// ==========================================================================
+const SPOTLIGHT_ACTIONS = [
+  { id: "morning_digest", icon: "☀️", title: "Daily Executive Briefing", desc: "Hardware, Git repositories, disk & battery status", tag: "Routine" },
+  { id: "tile_windows", icon: "🖥️", title: "Tile Workspace Windows", desc: "Split screen 50/50 with VS Code left and Chrome right", tag: "Window Autopilot" },
+  { id: "open_vscode", icon: "⚡", title: "Launch Visual Studio Code", desc: "Open active coding project workspace", tag: "Workspace" },
+  { id: "scan_projects", icon: "📂", title: "Inspect Repositories", desc: "Autonomous scanning of local git projects", tag: "Projects" },
+  { id: "screen_capture", icon: "👁️", title: "Vision Screen Debugger", desc: "Inspect display, diagnose visual bugs & errors", tag: "Vision" },
+  { id: "toggle_voice_daemon", icon: "🎙️", title: "Toggle Hands-Free Voice", desc: "Enable/disable continuous 'Hey Titan' wake word", tag: "Voice" },
+  { id: "deep_research", icon: "🔍", title: "Deep Web Research", desc: "Multi-site autonomous research & synthesis", tag: "Web" },
+  { id: "open_profile", icon: "👤", title: "Executive Memory & Profile", desc: "View and edit personalized developer rules & facts", tag: "Profile" },
+  { id: "quick_clean", icon: "🧹", title: "Quick Clean Workstation", desc: "Purge temporary files and recycle bin", tag: "System" },
+  { id: "lock_pc", icon: "🔒", title: "Lock Workstation", desc: "Secure workstation immediately", tag: "Security" }
+];
+
+let selectedSpotlightIndex = 0;
+let filteredSpotlight = [...SPOTLIGHT_ACTIONS];
+
+function openSpotlight() {
+  const modal = document.getElementById("spotlightModal");
+  const input = document.getElementById("spotlightInput");
+  if (!modal) return;
+  modal.classList.add("active");
+  selectedSpotlightIndex = 0;
+  filteredSpotlight = [...SPOTLIGHT_ACTIONS];
+  renderSpotlightList();
+  if (input) {
+    input.value = "";
+    setTimeout(() => input.focus(), 50);
+  }
+}
+
+function closeSpotlight(e) {
+  const modal = document.getElementById("spotlightModal");
+  if (modal) modal.classList.remove("active");
+}
+
+function renderSpotlightList() {
+  const list = document.getElementById("spotlightList");
+  if (!list) return;
+
+  if (filteredSpotlight.length === 0) {
+    list.innerHTML = `<div style="padding:16px; text-align:center; color:var(--text-muted); font-size:13px;">No commands matching query.</div>`;
+    return;
+  }
+
+  list.innerHTML = filteredSpotlight.map((act, idx) => `
+    <div class="spotlight-item ${idx === selectedSpotlightIndex ? 'selected' : ''}" onclick="executeSpotlightAction('${act.id}')">
+      <div class="spotlight-item-icon">${act.icon}</div>
+      <div class="spotlight-item-info">
+        <span class="spotlight-item-title">${act.title}</span>
+        <span class="spotlight-item-desc">${act.desc}</span>
+      </div>
+      <span class="spotlight-item-tag">${act.tag}</span>
+    </div>
+  `).join("");
+}
+
+function filterSpotlight() {
+  const query = document.getElementById("spotlightInput").value.toLowerCase().trim();
+  if (!query) {
+    filteredSpotlight = [...SPOTLIGHT_ACTIONS];
+  } else {
+    filteredSpotlight = SPOTLIGHT_ACTIONS.filter(a =>
+      a.title.toLowerCase().includes(query) ||
+      a.desc.toLowerCase().includes(query) ||
+      a.tag.toLowerCase().includes(query) ||
+      a.id.toLowerCase().includes(query)
+    );
+  }
+  selectedSpotlightIndex = 0;
+  renderSpotlightList();
+}
+
+function handleSpotlightKey(e) {
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    selectedSpotlightIndex = (selectedSpotlightIndex + 1) % filteredSpotlight.length;
+    renderSpotlightList();
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    selectedSpotlightIndex = (selectedSpotlightIndex - 1 + filteredSpotlight.length) % filteredSpotlight.length;
+    renderSpotlightList();
+  } else if (e.key === "Enter") {
+    e.preventDefault();
+    if (filteredSpotlight[selectedSpotlightIndex]) {
+      executeSpotlightAction(filteredSpotlight[selectedSpotlightIndex].id);
+    }
+  } else if (e.key === "Escape") {
+    closeSpotlight();
+  }
+}
+
+function executeSpotlightAction(actionId) {
+  closeSpotlight();
+
+  if (actionId === "open_profile") {
+    switchView("tab-profile");
+    return;
+  } else if (actionId === "tile_windows") {
+    quickAction("arrange_workspace");
+    return;
+  } else if (actionId === "quick_clean") {
+    quickAction("quick_clean");
+    return;
+  }
+
+  quickAction(actionId);
+}
+
+// Global Spotlight Hotkey (Ctrl+K or Alt+Space or Escape)
+window.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey && e.key.toLowerCase() === "k") || (e.altKey && (e.code === "Space" || e.key === " "))) {
+    e.preventDefault();
+    const modal = document.getElementById("spotlightModal");
+    if (modal && modal.classList.contains("active")) {
+      closeSpotlight();
+    } else {
+      openSpotlight();
+    }
+  } else if (e.key === "Escape") {
+    closeSpotlight();
+  }
 });

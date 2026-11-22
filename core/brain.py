@@ -282,6 +282,26 @@ class UniversalAgentBrain:
                 else:
                     return {"success": True, "tasks": task_board.list_tasks(args.get("status")), "summary": task_board.get_summary()}
 
+            elif tool_name == "manage_profile":
+                from core.profile_manager import executive_profile
+                act = args.get("action", "get").lower()
+                if act == "update":
+                    updates = args.get("updates", {})
+                    return executive_profile.update_profile(updates)
+                return {"success": True, "profile": executive_profile.get_profile()}
+
+            elif tool_name == "remember_fact":
+                from core.profile_manager import executive_profile
+                cat = args.get("category", "preference")
+                subj = args.get("subject", "general")
+                fact = args.get("fact", "")
+                return executive_profile.remember_fact(cat, subj, fact)
+
+            elif tool_name == "recall_facts":
+                from core.profile_manager import executive_profile
+                q = args.get("query")
+                return {"success": True, "facts": executive_profile.recall_facts(q)}
+
             elif tool_name == "web_download":
                 from automation.web_agent import web_agent
                 return web_agent.download_file(args.get("url", ""), args.get("filename"))
@@ -313,8 +333,12 @@ class UniversalAgentBrain:
 
         tools_schema = HermesToolParser.get_hermes_tools_prompt()
 
+        from core.profile_manager import executive_profile
+        exec_ctx = executive_profile.build_executive_context()
+
         system_prompt = f"""{HERMES_SYSTEM_PROMPT}
 
+{exec_ctx}
 Live System Telemetry:
 - Hardware: {t['gpu']['name']} (VRAM Used: {vram_mb} / 4096 MB)
 - CPU Utilization: {cpu_pct}% | Memory: {ram_pct}% | Battery: {battery}%
