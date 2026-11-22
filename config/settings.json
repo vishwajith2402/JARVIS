@@ -9,8 +9,9 @@
   },
   "agent": {
     "engine": "auto",
-    "primary_model": "llama3.2:3b",
+    "primary_model": "titan:latest",
     "fallback_models": [
+      "titan:latest",
       "llama3.2:3b",
       "hermes3:8b",
       "phi3.5:latest"

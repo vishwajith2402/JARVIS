@@ -184,13 +184,19 @@ class UniversalAppController:
         windows = []
 
         def enum_handler(hwnd, extra):
-            if win32gui.IsWindowVisible(hwnd):
-                title = win32gui.GetWindowText(hwnd)
-                if title.strip():
-                    _, pid = win32process.GetWindowThreadProcessId(hwnd)
-                    windows.append({"hwnd": hwnd, "title": title, "pid": pid})
+            try:
+                if win32gui.IsWindowVisible(hwnd):
+                    title = win32gui.GetWindowText(hwnd)
+                    if title.strip():
+                        _, pid = win32process.GetWindowThreadProcessId(hwnd)
+                        windows.append({"hwnd": hwnd, "title": title, "pid": pid})
+            except Exception:
+                pass
 
-        win32gui.EnumWindows(enum_handler, None)
+        try:
+            win32gui.EnumWindows(enum_handler, None)
+        except Exception:
+            pass
         return windows
 
     def focus_window_by_title(self, query: str) -> bool:

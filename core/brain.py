@@ -24,7 +24,7 @@ from vision.visual_analyzer import visual_analyzer
 class UniversalAgentBrain:
     def __init__(self):
         self.user_title = config.get("system", "user_title", "Sir")
-        self.primary_model = config.get("agent", "primary_model", "llama3.2:3b")
+        self.primary_model = config.get("agent", "primary_model", "titan:latest")
         self._active_provider = "none"
         self._active_endpoint = ""
         self._query_cache: Dict[str, str] = {

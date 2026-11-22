@@ -102,9 +102,23 @@ class CodingAgent:
             "5. Address the user politely as Sir and explain how to use the software concisely."
         )
 
+        # Retrieve relevant training patterns from knowledge base
+        context_snippets = []
+        try:
+            from automation.deep_research import deep_research
+            search_results = deep_research.search(user_prompt, limit=2)
+            for res in search_results:
+                snippet = res.get("snippet", "").strip()
+                if snippet:
+                    context_snippets.append(f"--- Proven Reference Pattern ({res.get('file_name')}):\n{snippet[:450]}")
+        except Exception:
+            pass
+
+        rag_context = ("\n\nPROVEN ARCHITECTURAL KNOWLEDGE BASE:\n" + "\n\n".join(context_snippets)) if context_snippets else ""
+
         messages = [
             {"role": "system", "content": system_instruction},
-            {"role": "user", "content": f"User Request: {user_prompt}\n\nPlease generate the complete, fully implemented code now."}
+            {"role": "user", "content": f"User Request: {user_prompt}{rag_context}\n\nPlease generate the complete, fully implemented code now."}
         ]
 
         try:

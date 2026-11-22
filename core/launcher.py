@@ -39,11 +39,11 @@ OLLAMA_API = "http://127.0.0.1:11434"
 
 class AgentLauncher:
     def __init__(self,
-                 preferred_model: str = "llama3.2:3b",
+                 preferred_model: str = "titan:latest",
                  fallback_models: Optional[List[str]] = None,
                  on_status: Optional[Callable[[str], None]] = None):
         self.preferred_model = preferred_model
-        self.fallback_models = fallback_models or ["llama3.2:3b", "hermes3:8b", "phi3.5:latest"]
+        self.fallback_models = fallback_models or ["titan:latest", "llama3.2:3b", "hermes3:8b", "phi3.5:latest"]
         self.on_status = on_status or print
         self._ollama_proc: Optional[subprocess.Popen] = None
 
