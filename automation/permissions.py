@@ -38,8 +38,12 @@ class PermissionManager:
             "gui_click": PermissionLevel.LEVEL_1_AUTO,
             "gui_type": PermissionLevel.LEVEL_1_AUTO,
             "gui_hotkey": PermissionLevel.LEVEL_1_AUTO,
+            "analyze_document": PermissionLevel.LEVEL_1_AUTO,
+            "morning_briefing": PermissionLevel.LEVEL_1_AUTO,
+            "debug_screen": PermissionLevel.LEVEL_1_AUTO,
 
             # Level 2
+            "execute_routine": PermissionLevel.LEVEL_2_CONFIRM,
             "open_application": PermissionLevel.LEVEL_2_CONFIRM,
             "close_application": PermissionLevel.LEVEL_2_CONFIRM,
             "write_file": PermissionLevel.LEVEL_2_CONFIRM,

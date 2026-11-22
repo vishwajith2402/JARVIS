@@ -39,13 +39,23 @@
   },
   "voice": {
     "enabled": true,
-    "tts_engine": "sapi",
+    "tts_engine": "neural",
     "voice_rate": 1,
     "voice_volume": 100,
-    "voice_name": "",
+    "voice_name": "en-GB-RyanNeural",
     "wake_word": "titan",
     "push_to_talk_key": "ctrl+shift+j",
     "auto_speak_responses": true
+  },
+  "spotlight": {
+    "enabled": true,
+    "hotkey": "alt+space",
+    "fallback_hotkey": "ctrl+space"
+  },
+  "watchdog": {
+    "enabled": true,
+    "interval_minutes": 15,
+    "auto_morning_briefing": true
   },
   "vision": {
     "enabled": true,

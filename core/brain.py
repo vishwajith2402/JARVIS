@@ -233,6 +233,24 @@ class UniversalAgentBrain:
             elif tool_name == "empty_recycle_bin":
                 return system_control.empty_recycle_bin()
 
+            elif tool_name == "execute_routine":
+                from automation.routines import routines
+                return routines.execute_routine(args.get("routine_name", "dev_session"))
+
+            elif tool_name == "morning_briefing":
+                from automation.watchdog import watchdog
+                return {"success": True, "briefing": watchdog.generate_morning_briefing()}
+
+            elif tool_name == "analyze_document":
+                from automation.document_intelligence import doc_intelligence
+                p = args.get("file_path", "")
+                q = args.get("question")
+                return doc_intelligence.analyze_document(p, q)
+
+            elif tool_name == "debug_screen":
+                from vision.screen_sense import screen_sense
+                return screen_sense.debug_screen(args.get("hint"))
+
             else:
                 return {"error": f"Unknown tool: '{tool_name}'"}
         except Exception as e:
