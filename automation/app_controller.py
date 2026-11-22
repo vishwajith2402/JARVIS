@@ -273,5 +273,7 @@ class UniversalAppController:
 
         return {"success": False, "message": f"No active windows or processes found for '{app_name}' to close, Sir."}
 
+    open_app = launch_app
+
 
 app_controller = UniversalAppController()

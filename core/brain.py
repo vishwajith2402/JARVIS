@@ -303,6 +303,10 @@ Live System Telemetry:
 """
         return system_prompt
 
+    def chat(self, prompt: str, session_id: str = "main") -> str:
+        """Convenience alias for generate_response."""
+        return self.generate_response(prompt, session_id=session_id)
+
     def generate_response(self, user_prompt: str, session_id: str = "main", on_chunk: Optional[Callable[[str], None]] = None) -> str:
         self._detect_provider()
 

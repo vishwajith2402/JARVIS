@@ -234,3 +234,5 @@ class OpenJarvisAgentManager:
         # 5. Native ReAct Agent & Orchestrator (Default)
         else:
             return self.brain.generate_response(user_prompt, session_id=session_id)
+
+    handle_message = route_query
