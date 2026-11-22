@@ -154,7 +154,7 @@ class JarvisApiBridge:
                 return f"Update available, Sir: {res.get('message')}. Applying git pull..."
             elif "error" in res:
                 return f"Update status: {res.get('error')}"
-            return "All JARVIS subsystems and features are running the latest version, Sir."
+            return "All TITAN subsystems and features are running the latest version, Sir."
 
         elif action_type == "toggle_voice_daemon":
             from voice.voice_daemon import voice_daemon

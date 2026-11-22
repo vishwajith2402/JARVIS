@@ -78,7 +78,7 @@ class AgentLauncher:
         try:
             req = urllib.request.Request(
                 f"{OLLAMA_API}/api/tags",
-                headers={"User-Agent": "JARVIS/1.1"}
+                headers={"User-Agent": "TITAN/1.4"}
             )
             with urllib.request.urlopen(req, timeout=1.5) as resp:
                 return resp.status == 200
@@ -90,7 +90,7 @@ class AgentLauncher:
             try:
                 req = urllib.request.Request(
                     f"{url}/models",
-                    headers={"User-Agent": "JARVIS/1.1"}
+                    headers={"User-Agent": "TITAN/1.4"}
                 )
                 with urllib.request.urlopen(req, timeout=1.2) as resp:
                     if resp.status == 200:
@@ -134,7 +134,7 @@ class AgentLauncher:
         try:
             req = urllib.request.Request(
                 f"{OLLAMA_API}/api/tags",
-                headers={"User-Agent": "JARVIS/1.1"}
+                headers={"User-Agent": "TITAN/1.4"}
             )
             with urllib.request.urlopen(req, timeout=3) as resp:
                 data = json.loads(resp.read().decode("utf-8"))

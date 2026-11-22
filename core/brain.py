@@ -71,7 +71,7 @@ class UniversalAgentBrain:
 
     def _ping_url(self, url: str) -> bool:
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": "JARVIS-Agent/1.0"})
+            req = urllib.request.Request(url, headers={"User-Agent": "TITAN-Agent/1.0"})
             with urllib.request.urlopen(req, timeout=1.2) as resp:
                 return resp.status in (200, 204)
         except Exception:

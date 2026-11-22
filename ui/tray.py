@@ -25,37 +25,38 @@ class JarvisBackgroundDaemon:
         if not phrase or not self.wake_enabled:
             return
 
-        print(f"[JARVIS Background] Heard phrase: '{phrase}'")
+        print(f"[TITAN Background] Heard phrase: '{phrase}'")
         if wake_detector.contains_wake_word(phrase):
             command = wake_detector.extract_command(phrase)
             speaker.speak("Yes, Sir?", interrupt=True)
 
             if not command:
-                # User just said "Hey Jarvis" - listen for follow up command
+                # User just said "Hey Titan" or "Hey Jarvis" - listen for follow up command
                 command = listener.listen_once(timeout=4.0)
 
             if command:
-                print(f"[JARVIS Background] Executing command: '{command}'")
+                print(f"[TITAN Background] Executing command: '{command}'")
                 reply = brain.generate_response(command)
                 speaker.speak(reply)
 
     def start(self) -> None:
         self.running = True
-        speaker.speak(f"J.A.R.V.I.S. background protocols initiated, {config.get('system', 'user_title', 'Sir')}.")
+        speaker.speak(f"TITAN background protocols initiated, {config.get('system', 'user_title', 'Sir')}.")
         listener.start_continuous_listening(self._voice_handler)
-        print("[JARVIS] Background daemon active. Listening for 'Hey Jarvis'...")
+        print("[TITAN] Background daemon active. Listening for 'Hey Titan'...")
 
         try:
             while self.running:
                 time.sleep(1)
+            self.stop()
         except KeyboardInterrupt:
             self.stop()
 
     def stop(self) -> None:
         self.running = False
         listener.stop_continuous_listening()
-        speaker.speak("J.A.R.V.I.S. background protocols standing down.")
-        print("[JARVIS] Background daemon stopped.")
+        speaker.speak("TITAN background protocols standing down.")
+        print("[TITAN] Background daemon stopped.")
 
 
 daemon = JarvisBackgroundDaemon()
