@@ -2077,11 +2077,11 @@ body.dark-theme {
 
 .hero-hologram-overlay {
   position: absolute;
-  left: 25.4%;
-  top: 52.7%;
+  left: 27.0%;
+  top: 56.2%;
   transform: translate(-50%, -50%);
-  width: 145px;
-  height: 145px;
+  width: 250px;
+  height: 250px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2097,39 +2097,102 @@ body.dark-theme {
 
 .holo-ring-1 {
   inset: 0;
-  border: 1.5px dashed rgba(56, 189, 248, 0.85);
-  animation: holoRotateCW 12s linear infinite;
-  box-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+  border: 2px dashed rgba(56, 189, 248, 0.85);
+  animation: holoRotateCW 14s linear infinite;
+  box-shadow: 0 0 25px rgba(56, 189, 248, 0.5), inset 0 0 15px rgba(56, 189, 248, 0.25);
 }
 
 .holo-ring-2 {
-  inset: 16px;
-  border: 1.5px solid rgba(6, 182, 212, 0.7);
+  inset: 28px;
+  border: 2px solid rgba(6, 182, 212, 0.75);
   border-top-color: transparent;
   border-bottom-color: transparent;
-  animation: holoRotateCCW 8s linear infinite;
+  animation: holoRotateCCW 9s linear infinite;
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
 }
 
 .holo-ring-3 {
-  inset: 32px;
-  border: 1.5px dashed rgba(168, 85, 247, 0.6);
+  inset: 56px;
+  border: 1.5px dashed rgba(168, 85, 247, 0.7);
   animation: holoRotateCW 6s linear infinite;
 }
 
+.holo-core-badge {
+  position: relative;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 24px;
+  background: rgba(3, 7, 18, 0.85);
+  border: 1.5px solid #38bdf8;
+  border-radius: 999px;
+  box-shadow: 0 0 25px rgba(56, 189, 248, 0.65),
+              inset 0 0 15px rgba(56, 189, 248, 0.4),
+              0 6px 25px rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(10px);
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.holo-tech-tick {
+  display: inline-block;
+  width: 12px;
+  height: 2px;
+  background: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+  position: relative;
+}
+
+.holo-tech-tick.left::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -3px;
+  width: 2px;
+  height: 8px;
+  background: #38bdf8;
+  box-shadow: 0 0 6px #38bdf8;
+}
+
+.holo-tech-tick.right::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: -3px;
+  width: 2px;
+  height: 8px;
+  background: #38bdf8;
+  box-shadow: 0 0 6px #38bdf8;
+}
+
 .holo-core-text {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 11px;
-  font-weight: 800;
+  font-family: 'Orbitron', 'Rajdhani', sans-serif;
+  font-size: 21px;
+  font-weight: 900;
   color: #ffffff;
-  letter-spacing: 0.16em;
-  text-shadow: 0 0 10px #38bdf8, 0 0 20px #06b6d4;
-  z-index: 2;
-  transition: transform 0.25s ease;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px #ffffff,
+               0 0 16px #38bdf8,
+               0 0 32px #0284c7;
+  line-height: 1;
+}
+
+.hero-hologram-overlay:hover .holo-core-badge {
+  transform: scale(1.1);
+  border-color: #67e8f9;
+  background: rgba(3, 7, 18, 0.94);
+  box-shadow: 0 0 35px rgba(56, 189, 248, 0.9),
+              inset 0 0 20px rgba(56, 189, 248, 0.6),
+              0 8px 30px rgba(0, 0, 0, 0.95);
 }
 
 .hero-hologram-overlay:hover .holo-core-text {
-  transform: scale(1.1);
-  text-shadow: 0 0 14px #38bdf8, 0 0 28px #06b6d4;
+  text-shadow: 0 0 12px #ffffff,
+               0 0 24px #38bdf8,
+               0 0 45px #00e5ff;
 }
 
 @keyframes holoRotateCW {
@@ -3248,11 +3311,11 @@ body.dark-theme {
 
 .hero-hologram-overlay {
   position: absolute;
-  left: 25.4%;
-  top: 52.7%;
+  left: 27.0%;
+  top: 56.2%;
   transform: translate(-50%, -50%);
-  width: 145px;
-  height: 145px;
+  width: 250px;
+  height: 250px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3268,39 +3331,102 @@ body.dark-theme {
 
 .holo-ring-1 {
   inset: 0;
-  border: 1.5px dashed rgba(56, 189, 248, 0.85);
-  animation: holoRotateCW 12s linear infinite;
-  box-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+  border: 2px dashed rgba(56, 189, 248, 0.85);
+  animation: holoRotateCW 14s linear infinite;
+  box-shadow: 0 0 25px rgba(56, 189, 248, 0.5), inset 0 0 15px rgba(56, 189, 248, 0.25);
 }
 
 .holo-ring-2 {
-  inset: 16px;
-  border: 1.5px solid rgba(6, 182, 212, 0.7);
+  inset: 28px;
+  border: 2px solid rgba(6, 182, 212, 0.75);
   border-top-color: transparent;
   border-bottom-color: transparent;
-  animation: holoRotateCCW 8s linear infinite;
+  animation: holoRotateCCW 9s linear infinite;
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
 }
 
 .holo-ring-3 {
-  inset: 32px;
-  border: 1.5px dashed rgba(168, 85, 247, 0.6);
+  inset: 56px;
+  border: 1.5px dashed rgba(168, 85, 247, 0.7);
   animation: holoRotateCW 6s linear infinite;
 }
 
+.holo-core-badge {
+  position: relative;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 24px;
+  background: rgba(3, 7, 18, 0.85);
+  border: 1.5px solid #38bdf8;
+  border-radius: 999px;
+  box-shadow: 0 0 25px rgba(56, 189, 248, 0.65),
+              inset 0 0 15px rgba(56, 189, 248, 0.4),
+              0 6px 25px rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(10px);
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.holo-tech-tick {
+  display: inline-block;
+  width: 12px;
+  height: 2px;
+  background: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+  position: relative;
+}
+
+.holo-tech-tick.left::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -3px;
+  width: 2px;
+  height: 8px;
+  background: #38bdf8;
+  box-shadow: 0 0 6px #38bdf8;
+}
+
+.holo-tech-tick.right::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: -3px;
+  width: 2px;
+  height: 8px;
+  background: #38bdf8;
+  box-shadow: 0 0 6px #38bdf8;
+}
+
 .holo-core-text {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 11px;
-  font-weight: 800;
+  font-family: 'Orbitron', 'Rajdhani', sans-serif;
+  font-size: 21px;
+  font-weight: 900;
   color: #ffffff;
-  letter-spacing: 0.16em;
-  text-shadow: 0 0 10px #38bdf8, 0 0 20px #06b6d4;
-  z-index: 2;
-  transition: transform 0.25s ease;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px #ffffff,
+               0 0 16px #38bdf8,
+               0 0 32px #0284c7;
+  line-height: 1;
+}
+
+.hero-hologram-overlay:hover .holo-core-badge {
+  transform: scale(1.1);
+  border-color: #67e8f9;
+  background: rgba(3, 7, 18, 0.94);
+  box-shadow: 0 0 35px rgba(56, 189, 248, 0.9),
+              inset 0 0 20px rgba(56, 189, 248, 0.6),
+              0 8px 30px rgba(0, 0, 0, 0.95);
 }
 
 .hero-hologram-overlay:hover .holo-core-text {
-  transform: scale(1.1);
-  text-shadow: 0 0 14px #38bdf8, 0 0 28px #06b6d4;
+  text-shadow: 0 0 12px #ffffff,
+               0 0 24px #38bdf8,
+               0 0 45px #00e5ff;
 }
 
 @keyframes holoRotateCW {
